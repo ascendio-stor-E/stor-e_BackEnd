@@ -24,14 +24,19 @@ public class Story {
     @Column(name = "image", nullable = false)
     private String image;
 
-    public Story() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "story_book_id")
+    private StoryBook storyBook;
 
-    public Story(UUID id, String textContent, Integer pageNumber, String image) {
+    public Story(UUID id, String textContent, Integer pageNumber, String image, StoryBook storyBook) {
         this.id = id;
         this.textContent = textContent;
         this.pageNumber = pageNumber;
         this.image = image;
+        this.storyBook = storyBook;
+    }
+
+    public Story() {
     }
 
     public UUID getId() {
@@ -64,5 +69,13 @@ public class Story {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public StoryBook getStoryBook() {
+        return storyBook;
+    }
+
+    public void setStoryBook(StoryBook storyBook) {
+        this.storyBook = storyBook;
     }
 }

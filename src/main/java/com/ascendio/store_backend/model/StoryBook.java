@@ -3,6 +3,8 @@ package com.ascendio.store_backend.model;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -21,18 +23,22 @@ public class StoryBook {
     @Column(name = "cover_image", nullable = false)
     private String coverImage;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "story_id")
-    private Story story;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id" , nullable = false)
+    private StoryUser storyUser;
+
+    @OneToMany(mappedBy = "storyBook", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Story> stories = new ArrayList<>();
 
     public StoryBook() {
     }
 
-    public StoryBook(UUID id, String title, String coverImage, Story story) {
+    public StoryBook(UUID id, String title, String coverImage, StoryUser storyUser, List<Story> stories) {
         this.id = id;
         this.title = title;
         this.coverImage = coverImage;
-        this.story = story;
+        this.storyUser = storyUser;
+        this.stories = stories;
     }
 
     public UUID getId() {
@@ -59,13 +65,20 @@ public class StoryBook {
         this.coverImage = coverImage;
     }
 
-    public Story getStory() {
-        return story;
+    public StoryUser getUser() {
+        return storyUser;
     }
 
-    public void setStory(Story story) {
-        this.story = story;
+    public void setUser(StoryUser storyUser) {
+        this.storyUser = storyUser;
+    }
+
+    public List<Story> getStoryPages() {
+        return stories;
+    }
+
+    public void setStoryPages(List<Story> stories) {
+        this.stories = stories;
     }
 }
-
 
