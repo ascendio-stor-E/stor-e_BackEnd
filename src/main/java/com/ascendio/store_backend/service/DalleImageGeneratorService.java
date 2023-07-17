@@ -2,50 +2,51 @@ package com.ascendio.store_backend.service;
 
 import com.ascendio.store_backend.dto.DalleImageGenerationRequest;
 import com.ascendio.store_backend.dto.DalleImageGenerationResponse;
-import com.ascendio.store_backend.config.OpenAiConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
 import org.springframework.util.StringUtils;
-import reactor.core.publisher.Mono;
-import org.springframework.web.reactive.function.client.WebClient;
-
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class DalleImageGeneratorService {
 
-    private final OpenAiConfiguration openai;
-    private final WebClient client;
-//    private final String apiEndpoint = "/api/stor-e/images/generations";
+    private static final Logger LOGGER = LoggerFactory.getLogger(DalleImageGeneratorService.class);
+    private final RestTemplate restTemplate;
+    @Value("${openai.api-key}")
+    private String openAiApiKey;
+    @Value("${openai.api-url}")
+    private String openAiApiUrl;
     private final String apiEndpoint = "/v1/images/generations";
 
-    public DalleImageGeneratorService(OpenAiConfiguration openai, WebClient client) {
-        this.openai = openai;
-        this.client = client;
+    public DalleImageGeneratorService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
-    public Mono<String> generateImage(String storyLine) {
+    public String generateImage(String storyLine) {
 
         if (!StringUtils.hasText(storyLine)) {
-            throw new IllegalArgumentException("Prompt must not be empty");
+            throw new IllegalArgumentException("StoryLine must not be empty");
         }
 
-        Logger LOGGER = LoggerFactory.getLogger(DalleImageGeneratorService.class);
-        final var req = new DalleImageGenerationRequest(storyLine);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(openAiApiKey);
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        return client.post().uri(openai.api() + apiEndpoint)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + openai.key())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .bodyValue(req)
-                .retrieve()
-                .bodyToMono(DalleImageGenerationResponse.class)
-                .doOnSuccess(resp -> {
-                    LOGGER.info("Received response from DALL-E for request: {}", storyLine);
-                })
-                .filter(resp -> resp.data().length > 0)
-                .map(resp -> resp.data()[0].url());
+        DalleImageGenerationRequest requestBody = new DalleImageGenerationRequest(storyLine);
+
+        HttpEntity<DalleImageGenerationRequest> httpEntity = new HttpEntity<>(requestBody, httpHeaders);
+
+        ResponseEntity<DalleImageGenerationResponse> response = restTemplate.exchange(
+                openAiApiUrl + apiEndpoint,
+                HttpMethod.POST,
+                httpEntity,
+                DalleImageGenerationResponse.class
+        );
+
+        return response.getBody().data()[0].url();
     }
 }

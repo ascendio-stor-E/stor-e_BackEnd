@@ -1,4 +1,6 @@
 package com.ascendio.store_backend.dto;
 
-public record DalleImageGenerationRequest(String storyLine) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record DalleImageGenerationRequest(@JsonProperty("prompt") String storyLine) {
 }

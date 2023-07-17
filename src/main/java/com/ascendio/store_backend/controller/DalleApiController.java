@@ -1,13 +1,13 @@
-package com.ascendio.store_backend.controller_OpenAI;
+package com.ascendio.store_backend.controller;
 
 import com.ascendio.store_backend.dto.DalleImageResponse;
 import com.ascendio.store_backend.service.DalleImageGeneratorService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 
 @RestController
-@RequestMapping("/api/stor-e")
+@RequestMapping("/api/storE")
 public class DalleApiController {
 
     private DalleImageGeneratorService service;
@@ -17,8 +17,8 @@ public class DalleApiController {
     }
 
     @GetMapping("/image")
-    Mono<DalleImageResponse> generateImage(@RequestParam("story_line") String storyLine) {
-        return service.generateImage(storyLine).map(response -> new DalleImageResponse(storyLine, response));
+    public ResponseEntity<DalleImageResponse> generateImage(@RequestParam("storyLine") String storyLine) {
+        return ResponseEntity.ok(new DalleImageResponse(storyLine, service.generateImage(storyLine)));
     }
 
 }
