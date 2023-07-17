@@ -6,7 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import java.util.UUID;
 
 @Entity
-@Table(name = "chat-gpt-history", indexes = @Index(columnList = "conversationId"))
+@Table(name = "chat_gpt_history", indexes = @Index(columnList = "conversation_id"))
 public class ChatGPTHistory {
 
     @Id
@@ -15,10 +15,10 @@ public class ChatGPTHistory {
     @GenericGenerator(name = "uuid-hibernate-generator", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    @Column(name = "conversationId", nullable = false)
+    @Column(name = "conversation_id", nullable = false)
     String conversationId;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, length = 2000)
     String content;
     @Column(name = "role", nullable = false)
     String role;
@@ -76,5 +76,16 @@ public class ChatGPTHistory {
 
     public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "ChatGPTHistory{" +
+                "id=" + id +
+                ", conversationId='" + conversationId + '\'' +
+                ", content='" + content + '\'' +
+                ", role='" + role + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }

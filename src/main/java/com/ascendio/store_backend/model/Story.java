@@ -15,13 +15,13 @@ public class Story {
     @GenericGenerator(name = "uuid-hibernate-generator", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    @Column(name = "text_content", nullable = false)
+    @Column(name = "text_content", nullable = false, length = 2000)
     private String textContent;
 
     @Column(name = "page_number", nullable = false)
     private Integer pageNumber;
 
-    @Column(name = "image", nullable = false)
+    @Column(name = "image", nullable = false, length = 2000)
     private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)

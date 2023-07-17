@@ -8,10 +8,10 @@ import java.util.UUID;
 
 public interface StoryHistoryRepository extends JpaRepository<ChatGPTHistory, UUID> {
     default List<ChatGPTHistory> findPreviousMessages(String conversationId){
-        return findAllOrderByCreatedAt(conversationId);
+        return findByConversationIdOrderByCreatedAt(conversationId);
     }
 
-    List<ChatGPTHistory> findAllOrderByCreatedAt(String conversationId);
+    List<ChatGPTHistory> findByConversationIdOrderByCreatedAt(String conversationId);
 
     default void saveStory(ChatGPTHistory chatGPTHistory){
         try{
