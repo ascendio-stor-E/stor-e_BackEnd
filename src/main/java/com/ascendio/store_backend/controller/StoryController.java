@@ -30,7 +30,7 @@ public class StoryController {
     }
 
     @PostMapping("/continueStory")
-    public ResponseEntity<StoryContinueResponseDto> createInitialStory(@RequestParam int optionChoice, @RequestParam String conversationId) {
+    public ResponseEntity<StoryContinueResponseDto> createContinuesStory(@RequestParam int optionChoice, @RequestParam String conversationId) {
         return ResponseEntity.ok(chatGPTService.continueStoryBook(optionChoice,conversationId));
     }
 
