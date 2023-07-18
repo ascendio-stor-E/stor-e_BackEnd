@@ -33,6 +33,10 @@ public class StoryBook {
     @OneToMany(mappedBy = "storyBook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Story> stories = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "favourite_id")
+    private Favourite favourite;
+
     public StoryBook() {
     }
 
@@ -105,6 +109,14 @@ public class StoryBook {
 
     public void setStoryPages(List<Story> stories) {
         this.stories = stories;
+    }
+
+    public Favourite getFavourite() {
+        return favourite;
+    }
+
+    public void setFavourite(Favourite favourite) {
+        this.favourite = favourite;
     }
 }
 

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+// Possibly review this endpoint name? Similar to StoryController's.
 @RequestMapping("/api/storE")
 public class DalleApiController {
 
