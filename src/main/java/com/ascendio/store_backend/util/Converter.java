@@ -3,7 +3,7 @@ package com.ascendio.store_backend.util;
 import com.ascendio.store_backend.dto.StoryBookRequestDto;
 import com.ascendio.store_backend.dto.StoryBookResponseDto;
 import com.ascendio.store_backend.dto.StoryRequestDto;
-import com.ascendio.store_backend.dto.StoryResponseDto;
+import com.ascendio.store_backend.dto.StoryStartResponseDto;
 import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.model.StoryBook;
 
@@ -18,13 +18,13 @@ public class Converter {
         return new Story();
     }
 
-    public static List<StoryResponseDto> toStoryResponseDtoList(List<Story> stories) {
-        List<StoryResponseDto> storyResponses = null;
+    public static List<StoryStartResponseDto> toStoryResponseDtoList(List<Story> stories) {
+        List<StoryStartResponseDto> storyResponses = null;
         return storyResponses;
     }
 
-    public static StoryResponseDto toStoryResponseDto(Story story) {
-        StoryResponseDto storyResponse = null;
+    public static StoryStartResponseDto toStoryResponseDto(Story story) {
+        StoryStartResponseDto storyResponse = null;
         return storyResponse;
     }
 
