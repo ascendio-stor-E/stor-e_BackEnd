@@ -6,6 +6,7 @@ import com.ascendio.store_backend.model.StoryUser;
 import com.ascendio.store_backend.repository.FavouritesRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,17 +23,21 @@ public class FavouritesService {
         this.userService = userService;
     }
 
-    public Favourite saveFavourite(StoryBook storyBook) {
+    public Favourite saveFavourite(/*String userId,*/ String storyBookId) {
         Favourite favourite = new Favourite();
 
         String userId = "bc644717-5970-4e0b-88a7-35d5f0931be1";
         Optional<StoryUser> user = userService.findUserById(UUID.fromString(userId));
-        favourite.setStoryUser(user.get());
 
-        String storyBookId = String.valueOf(storyBook.getId());
-        favourite.getStoryBookId().get(Integer.parseInt(storyBookId));
 
-        return favourite;
+        String bookId = String.valueOf(storyBookId);
+        favourite.getStoryBookId().get(Integer.parseInt(bookId));
 
+        return favRepo.save(favourite);
+    }
+
+    public List<Favourite> getAllUserFavourites(/*String userId*/) {
+        String userId = "bc644717-5970-4e0b-88a7-35d5f0931be1";
+        return null;
     }
 }
