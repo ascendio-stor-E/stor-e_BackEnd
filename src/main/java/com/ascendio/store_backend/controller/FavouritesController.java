@@ -18,10 +18,7 @@ public class FavouritesController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Favourite> saveFavourite(/*@RequestBody StoryUser storyUser, */@RequestBody String storyBook) {
-        if (storyBook == null/* || storyUser == null*/) {
-            return ResponseEntity.badRequest().build();
-        }
-        return new ResponseEntity<>(favouritesService.saveFavourite(/*storyUser, */storyBook), HttpStatus.CREATED);
+    public ResponseEntity<Favourite> saveFavourite(/*@RequestBody StoryUser storyUser, */@RequestBody String storyBookId) {
+        return ResponseEntity.ok(favouritesService.saveFavourite(/*storyUser, */storyBookId));
     }
 }
