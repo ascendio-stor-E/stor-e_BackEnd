@@ -114,7 +114,6 @@ public class ChatGPTService {
         );
 
         String content = response.choices().get(0).message().content();
-        String imageUrl = dalleImageGeneratorService.generateImage(content);
 
         ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), conversationId, content, "assistant", System.currentTimeMillis());
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
@@ -130,6 +129,9 @@ public class ChatGPTService {
                 .orElseThrow();
 
         List<String> options = getOptions(lines);
+
+
+        String imageUrl = dalleImageGeneratorService.generateImage(story);
 
         Optional<StoryBook> storyBook = storyBookService.findStoryBookById(storyBookId);
         // save story here
