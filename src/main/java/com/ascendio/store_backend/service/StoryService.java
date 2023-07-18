@@ -2,11 +2,8 @@ package com.ascendio.store_backend.service;
 
 import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.model.StoryBook;
-import com.ascendio.store_backend.repository.StoryBookRepository;
 import com.ascendio.store_backend.repository.StoryRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class StoryService {

@@ -3,14 +3,12 @@ package com.ascendio.store_backend.service;
 import com.ascendio.store_backend.dto.*;
 import com.ascendio.store_backend.model.ChatGPTHistory;
 import com.ascendio.store_backend.model.StoryBook;
-import com.ascendio.store_backend.model.StoryUser;
 import com.ascendio.store_backend.repository.StoryHistoryRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +26,7 @@ public class ChatGPTService {
     final StoryService storyService;
     final DalleImageGeneratorService dalleImageGeneratorService;
     final RestTemplate restTemplate;
-    String apiEndpoint = "/v1/chat/completions";
+    final String apiEndpoint = "/v1/chat/completions";
 
     public ChatGPTService(
             @Value("${openai.api-url}")
