@@ -14,8 +14,8 @@ public class StoryService {
         this.storyRepository = storyRepository;
     }
 
-    public Story saveStory(String storyContent, int pageNumber, String image, StoryBook storyBook) {
-        Story story = new Story(storyContent, pageNumber, image, storyBook);
+    public Story saveStory(String storyContent, int pageNumber, String imageName, StoryBook storyBook) {
+        Story story = new Story(storyContent, pageNumber, imageName, storyBook);
         return storyRepository.save(story);
     }
 }
