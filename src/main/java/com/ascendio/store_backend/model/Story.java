@@ -28,8 +28,7 @@ public class Story {
     @JoinColumn(name = "story_book_id")
     private StoryBook storyBook;
 
-    public Story(UUID id, String textContent, Integer pageNumber, String image, StoryBook storyBook) {
-        this.id = id;
+    public Story(String textContent, Integer pageNumber, String image, StoryBook storyBook) {
         this.textContent = textContent;
         this.pageNumber = pageNumber;
         this.image = image;

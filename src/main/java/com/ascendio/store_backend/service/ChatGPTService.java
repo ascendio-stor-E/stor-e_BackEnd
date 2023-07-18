@@ -2,6 +2,8 @@ package com.ascendio.store_backend.service;
 
 import com.ascendio.store_backend.dto.*;
 import com.ascendio.store_backend.model.ChatGPTHistory;
+import com.ascendio.store_backend.model.StoryBook;
+import com.ascendio.store_backend.model.StoryUser;
 import com.ascendio.store_backend.repository.StoryHistoryRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,6 +24,9 @@ public class ChatGPTService {
     final String secondPrompt;
     final String apikey;
     final StoryHistoryRepository storyHistoryRepository;
+    final StoryBookService storyBookService;
+    final StoryService storyService;
+    final DalleImageGeneratorService dalleImageGeneratorService;
     final RestTemplate restTemplate;
     String apiEndpoint = "/v1/chat/completions";
 
@@ -36,6 +42,9 @@ public class ChatGPTService {
             @Value("${openai.api-key}")
             String apikey,
             StoryHistoryRepository storyHistoryRepository,
+            StoryBookService storyBookService,
+            StoryService storyService,
+            DalleImageGeneratorService dalleImageGeneratorService,
             RestTemplate restTemplate
     ) {
         this.chatCompletionURL = chatCompletionURL;
@@ -44,6 +53,9 @@ public class ChatGPTService {
         this.secondPrompt = secondPrompt;
         this.apikey = apikey;
         this.storyHistoryRepository = storyHistoryRepository;
+        this.storyBookService = storyBookService;
+        this.dalleImageGeneratorService = dalleImageGeneratorService;
+        this.storyService=storyService;
         this.restTemplate = restTemplate;
     }
 
@@ -65,10 +77,14 @@ public class ChatGPTService {
 
         List<String> options = getOptions(content.split("\n"));
 
-        return new StoryStartResponseDto(options, response.id());
+//        Create story book here
+        StoryBook storyBook = storyBookService.saveStoryBook();
+
+
+        return new StoryStartResponseDto(options, response.id(), storyBook.getId());
     }
 
-    public StoryContinueResponseDto continueStoryBook(int optionChoice, String conversationId) {
+    public StoryContinueResponseDto continueStoryBook(int optionChoice, String conversationId, UUID storyBookId, int pageNumber) {
         List<ChatGPTHistory> previousMessages = storyHistoryRepository.findPreviousMessages(conversationId);
 
         String prompt;
@@ -98,6 +114,7 @@ public class ChatGPTService {
         );
 
         String content = response.choices().get(0).message().content();
+        String imageUrl = dalleImageGeneratorService.generateImage(content);
 
         ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), conversationId, content, "assistant", System.currentTimeMillis());
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
@@ -113,6 +130,10 @@ public class ChatGPTService {
                 .orElseThrow();
 
         List<String> options = getOptions(lines);
+
+        Optional<StoryBook> storyBook = storyBookService.findStoryBookById(storyBookId);
+        // save story here
+        storyService.saveStory(story, pageNumber,imageUrl, storyBook.get());
 
         return new StoryContinueResponseDto(part, story, options);
     }

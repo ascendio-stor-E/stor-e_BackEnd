@@ -7,6 +7,8 @@ import com.ascendio.store_backend.service.StoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/story")
 public class StoryController {
@@ -30,8 +32,11 @@ public class StoryController {
     }
 
     @PostMapping("/continueStory")
-    public ResponseEntity<StoryContinueResponseDto> createContinuesStory(@RequestParam int optionChoice, @RequestParam String conversationId) {
-        return ResponseEntity.ok(chatGPTService.continueStoryBook(optionChoice,conversationId));
+    public ResponseEntity<StoryContinueResponseDto> createContinuesStory(@RequestParam int optionChoice,
+                                                                         @RequestParam String conversationId,
+                                                                         @RequestParam UUID storyBookId,
+                                                                         @RequestParam int pageNumber) {
+        return ResponseEntity.ok(chatGPTService.continueStoryBook(optionChoice,conversationId,storyBookId,pageNumber));
     }
 
 
