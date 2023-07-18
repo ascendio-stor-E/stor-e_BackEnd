@@ -3,7 +3,6 @@ package com.ascendio.store_backend.service;
 import com.ascendio.store_backend.dto.*;
 import com.ascendio.store_backend.model.ChatGPTHistory;
 import com.ascendio.store_backend.repository.StoryHistoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,17 +22,18 @@ public class ChatGPTService {
     final String apikey;
     final StoryHistoryRepository storyHistoryRepository;
     final RestTemplate restTemplate;
+    String apiEndpoint = "/v1/chat/completions";
 
     public ChatGPTService(
-            @Value("${openai.api.url}")
+            @Value("${openai.api-url}")
             String chatCompletionURL,
             @Value("${openai.model}")
             String chatCompletionModel,
-            @Value("${openai.api.initialprompt}")
+            @Value("${openai.api-initialprompt}")
             String initialPrompt,
-            @Value("${openai.api.secondprompt}")
+            @Value("${openai.api-secondprompt}")
             String secondPrompt,
-            @Value("${openai.api.key}")
+            @Value("${openai.api-key}")
             String apikey,
             StoryHistoryRepository storyHistoryRepository,
             RestTemplate restTemplate
@@ -131,7 +131,7 @@ public class ChatGPTService {
                 headers
         );
 
-        return restTemplate.postForObject(chatCompletionURL, entity, ChatGPTResponse.class);
+        return restTemplate.postForObject(chatCompletionURL + apiEndpoint, entity, ChatGPTResponse.class);
     }
 
     public List<String> getOptions(String[] lines) {
