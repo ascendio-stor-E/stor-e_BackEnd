@@ -16,6 +16,7 @@ public class DalleImageGeneratorService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DalleImageGeneratorService.class);
     private static final String IMAGE_SIZE = "512x512";
     private static final Integer NUMBER_OF_IMAGES = 1;
+    private static final String ILLUSTRATION_STYLE = "Seussian style cartoon: ";
     private final RestTemplate restTemplate;
     private String openAiApiKey;
     private String openAiApiUrl;
@@ -39,7 +40,9 @@ public class DalleImageGeneratorService {
         httpHeaders.setBearerAuth(openAiApiKey);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        DalleImageGenerationRequest requestBody = new DalleImageGenerationRequest(storyLine, IMAGE_SIZE, NUMBER_OF_IMAGES);
+        String prompt = ILLUSTRATION_STYLE + storyLine;
+
+        DalleImageGenerationRequest requestBody = new DalleImageGenerationRequest(prompt, IMAGE_SIZE, NUMBER_OF_IMAGES);
 
         HttpEntity<DalleImageGenerationRequest> httpEntity = new HttpEntity<>(requestBody, httpHeaders);
 

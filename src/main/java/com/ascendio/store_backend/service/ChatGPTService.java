@@ -25,6 +25,7 @@ public class ChatGPTService {
     final StoryBookService storyBookService;
     final StoryService storyService;
     final DalleImageGeneratorService dalleImageGeneratorService;
+    final ImageBlobService imageBlobService;
     final RestTemplate restTemplate;
     final String apiEndpoint = "/v1/chat/completions";
 
@@ -43,6 +44,7 @@ public class ChatGPTService {
             StoryBookService storyBookService,
             StoryService storyService,
             DalleImageGeneratorService dalleImageGeneratorService,
+            ImageBlobService imageBlobService,
             RestTemplate restTemplate
     ) {
         this.chatCompletionURL = chatCompletionURL;
@@ -52,8 +54,9 @@ public class ChatGPTService {
         this.apikey = apikey;
         this.storyHistoryRepository = storyHistoryRepository;
         this.storyBookService = storyBookService;
-        this.dalleImageGeneratorService = dalleImageGeneratorService;
         this.storyService=storyService;
+        this.dalleImageGeneratorService = dalleImageGeneratorService;
+        this.imageBlobService = imageBlobService;
         this.restTemplate = restTemplate;
     }
 
@@ -121,7 +124,7 @@ public class ChatGPTService {
 
         String part = lines[0];
 
-        String story = Arrays.stream(lines)
+        String storyText = Arrays.stream(lines)
                 .filter(line -> !line.startsWith("Part ") && !line.isEmpty())
                 .findFirst()
                 .orElseThrow();
@@ -129,13 +132,20 @@ public class ChatGPTService {
         List<String> options = getOptions(lines);
 
 
-        String imageUrl = dalleImageGeneratorService.generateImage(story);
+        String imageUrl = dalleImageGeneratorService.generateImage(storyText);
 
         Optional<StoryBook> storyBook = storyBookService.findStoryBookById(storyBookId);
-        // save story here
-        storyService.saveStory(story, pageNumber,imageUrl, storyBook.get());
 
-        return new StoryContinueResponseDto(part, story, options);
+        //add image to blob storage
+
+        String imageName = imageBlobService.addToBlobStorage(imageUrl, storyBookId, pageNumber);
+
+        // save story here
+//        storyService.saveStory(story, pageNumber, imageUrl, storyBook.get());
+        storyService.saveStory(storyText, pageNumber, imageName, storyBook.get());
+
+
+        return new StoryContinueResponseDto(part, storyText, options);
     }
 
     public ChatGPTResponse sendChatGPTRequest(List<ChatGPTMessage> messages) {
