@@ -24,9 +24,7 @@ public class StoryController {
         this.chatGPTService = chatGPTService;
     }
 
-
-
-    @GetMapping("/allStories")
+    @GetMapping("/all")
     public ResponseEntity<List<Story>> getStories(@RequestParam UUID storyBookId) {
         return ResponseEntity.ok(service.getStories(storyBookId));
     }
@@ -36,8 +34,6 @@ public class StoryController {
     public ResponseEntity<Optional<Story>> getStoryById(@PathVariable UUID storyId) {
         return ResponseEntity.ok(service.getStoryById(storyId));
     }
-
-
 
 
     @PostMapping()
@@ -52,6 +48,5 @@ public class StoryController {
                                                                          @RequestParam int pageNumber) {
         return ResponseEntity.ok(chatGPTService.continueStoryBook(optionChoice,conversationId,storyBookId,pageNumber));
     }
-
 
 }
