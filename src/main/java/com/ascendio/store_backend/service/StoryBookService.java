@@ -32,6 +32,10 @@ public class StoryBookService {
         return storyBookRepository.findById(storyBookId);
     }
 
+    public StoryBook updateStoryBook(StoryBook storyBook) {
+        return storyBookRepository.save(storyBook);
+    }
+
 
     public List<StoryBook> getStoryBooks(UUID userId) {
         return storyBookRepository.findAllByUserId(userId);

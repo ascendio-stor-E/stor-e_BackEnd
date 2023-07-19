@@ -142,7 +142,13 @@ public class ChatGPTService {
         // save story here
         storyService.saveStory(storyText, pageNumber, imageName, storyBook.get());
 
-        return new StoryContinueResponseDto(part, storyText, options);
+        //set first photo as cover image of storyBook
+        if (storyBook.isPresent() && pageNumber == 1) {
+            storyBook.get().setCoverImage(imageName);
+            storyBookService.updateStoryBook(storyBook.get());
+        }
+
+        return new StoryContinueResponseDto(part, storyText, options, imageName);
     }
 
     public ChatGPTResponse sendChatGPTRequest(List<ChatGPTMessage> messages) {
