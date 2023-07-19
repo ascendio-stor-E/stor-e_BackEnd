@@ -8,11 +8,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "favourite")
 public class Favourite {
 
     @Id
-    @Column(name = "id")
     @GeneratedValue(generator = "uuid-hibernate-generator")
     @GenericGenerator(name = "uuid-hibernate-generator", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
@@ -25,10 +23,6 @@ public class Favourite {
     private List<StoryBook> storyBookId = new ArrayList<>();
 
     public Favourite() {
-    }
-
-    public Favourite(List<StoryBook> storyIds) {
-        this.storyBookId = storyIds;
     }
 
     public UUID getId() {
