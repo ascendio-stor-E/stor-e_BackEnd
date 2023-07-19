@@ -5,6 +5,7 @@ import com.ascendio.store_backend.model.StoryUser;
 import com.ascendio.store_backend.repository.StoryBookRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,9 +28,12 @@ public class StoryBookService {
         return storyBookRepository.save(storyBook);
     }
 
-    public Optional<StoryBook> findStoryBookById(UUID storyBookId) {
+    public Optional<StoryBook> getStoryBookById(UUID storyBookId) {
         return storyBookRepository.findById(storyBookId);
     }
 
 
+    public List<StoryBook> getStoryBooks(UUID userId) {
+        return storyBookRepository.findAllByUserId(userId);
+    }
 }
