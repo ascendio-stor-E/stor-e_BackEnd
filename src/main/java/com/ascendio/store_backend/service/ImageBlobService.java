@@ -13,6 +13,11 @@ import java.util.UUID;
 public class ImageBlobService {
 
     private static final int BYTE_BUFFER_SIZE = 4096;
+    private AzureBlobService azureBlobService;
+
+    public ImageBlobService(AzureBlobService azureBlobService) {
+        this.azureBlobService = azureBlobService;
+    }
 
     public String addToBlobStorage(String imageUrl, UUID storyBookId, int pageNumber) {
         String imageName = storyBookId.toString().concat(String.valueOf(pageNumber));
@@ -21,20 +26,17 @@ public class ImageBlobService {
             // take it as a byte array
             byte[] imageBytes = downloadImageToByteArray(imageUrl);
 
-            // TODO: remove this comment
-            // files.write
-//            Files.write(
-//                    Paths.get("/Users/salt-dev/Documents/Vijani/labs/week12and13/final_project/data/a.png"),
-//                    imageBytes);
-
-
-            // TODO: call Azure blob service and pass byte array
-
+            // call Azure blob service and pass byte array
+            azureBlobService.uploadToAzureBlob(imageName, imageBytes);
 
         } catch (Exception ex) {
             throw new ImageSaveException(ex.getMessage());
         }
         return imageName;
+    }
+
+    public byte[] getFromBlobStorage(String imageName) {
+        return azureBlobService.getImage(imageName);
     }
 
     private byte[] downloadImageToByteArray(String imageUrl) throws Exception {

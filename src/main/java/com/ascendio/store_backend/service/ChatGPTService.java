@@ -7,6 +7,7 @@ import com.ascendio.store_backend.repository.StoryHistoryRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
@@ -81,7 +82,6 @@ public class ChatGPTService {
 //        Create story book here
         StoryBook storyBook = storyBookService.saveStoryBook();
 
-
         return new StoryStartResponseDto(options, response.id(), storyBook.getId());
     }
 
@@ -135,15 +135,12 @@ public class ChatGPTService {
         String imageUrl = dalleImageGeneratorService.generateImage(storyText);
 
         Optional<StoryBook> storyBook = storyBookService.findStoryBookById(storyBookId);
-
         //add image to blob storage
 
         String imageName = imageBlobService.addToBlobStorage(imageUrl, storyBookId, pageNumber);
 
         // save story here
-//        storyService.saveStory(story, pageNumber, imageUrl, storyBook.get());
         storyService.saveStory(storyText, pageNumber, imageName, storyBook.get());
-
 
         return new StoryContinueResponseDto(part, storyText, options);
     }
@@ -151,6 +148,7 @@ public class ChatGPTService {
     public ChatGPTResponse sendChatGPTRequest(List<ChatGPTMessage> messages) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + apikey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<ChatGPTRequest> entity = new HttpEntity<>(
                 new ChatGPTRequest(

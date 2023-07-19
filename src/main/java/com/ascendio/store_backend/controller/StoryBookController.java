@@ -20,7 +20,7 @@ public class StoryBookController {
         this.service = service;
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<StoryBook>> getStoryBooks(@RequestParam UUID userId){
         return ResponseEntity.ok(service.getStoryBooks(userId));
     }
