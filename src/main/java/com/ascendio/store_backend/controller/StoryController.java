@@ -9,14 +9,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/story")
 public class StoryController {
 
-    private StoryService service;
-    private ChatGPTService chatGPTService;
+    private final StoryService service;
+    private final ChatGPTService chatGPTService;
 
     public StoryController(StoryService service, ChatGPTService chatGPTService) {
         this.service = service;
@@ -26,13 +27,13 @@ public class StoryController {
 
 
     @GetMapping("/allStories")
-    public ResponseEntity<List<Story>> getStories(@RequestParam UUID storyBookid) {
-        return ResponseEntity.ok(service.getStories(storyBookid));
+    public ResponseEntity<List<Story>> getStories(@RequestParam UUID storyBookId) {
+        return ResponseEntity.ok(service.getStories(storyBookId));
     }
 
 
     @GetMapping("/{storyId}")
-    public ResponseEntity<Story> getStoryById(@PathVariable UUID storyId) {
+    public ResponseEntity<Optional<Story>> getStoryById(@PathVariable UUID storyId) {
         return ResponseEntity.ok(service.getStoryById(storyId));
     }
 
