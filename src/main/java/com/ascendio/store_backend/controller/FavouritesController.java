@@ -1,11 +1,13 @@
 package com.ascendio.store_backend.controller;
 
 import com.ascendio.store_backend.model.Favourite;
-import com.ascendio.store_backend.model.StoryBook;
 import com.ascendio.store_backend.service.FavouritesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/favourites")
@@ -18,7 +20,19 @@ public class FavouritesController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Favourite> saveFavourite(/*@RequestBody StoryUser storyUser, */@RequestBody String storyBookId) {
+    public ResponseEntity<Favourite> saveFavourite(/*@RequestBody StoryUser storyUser, */@RequestBody UUID storyBookId) {
         return ResponseEntity.ok(favouritesService.saveFavourite(/*storyUser, */storyBookId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Favourite>> getFavourites(/*String userId*/) {
+        List<Favourite> favourites = favouritesService.getAllUserFavourites(/*userId*/);
+        return ResponseEntity.ok(favourites);
+    }
+
+    @DeleteMapping("/{storyBookId}")
+    public ResponseEntity<Void> deleteFavourite(@PathVariable UUID storyBookId){
+        favouritesService.deleteFavourite(storyBookId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
