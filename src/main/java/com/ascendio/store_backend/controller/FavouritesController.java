@@ -20,13 +20,13 @@ public class FavouritesController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Favourite> saveFavourite(/*@RequestBody StoryUser storyUser, */@RequestBody UUID storyBookId) {
-        return ResponseEntity.ok(favouritesService.saveFavourite(/*storyUser, */storyBookId));
+    public ResponseEntity<Favourite> saveFavourite(@RequestBody UUID storyBookId) {
+        return ResponseEntity.ok(favouritesService.saveFavourite(storyBookId));
     }
 
     @GetMapping
-    public ResponseEntity<List<Favourite>> getFavourites(/*String userId*/) {
-        List<Favourite> favourites = favouritesService.getAllUserFavourites(/*userId*/);
+    public ResponseEntity<List<Favourite>> getFavourites() {
+        List<Favourite> favourites = favouritesService.getAllUserFavourites();
         return ResponseEntity.ok(favourites);
     }
 
