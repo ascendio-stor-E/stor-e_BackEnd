@@ -33,6 +33,9 @@ class ChatGPTServiceTest {
     //@Mock
     RestTemplate restTemplate;
 
+    //@Mock
+    ImageBlobService imageBlobService;
+
 
     ChatGPTService chatGPTService;
 
@@ -42,6 +45,7 @@ class ChatGPTServiceTest {
         storyBookService = mock();
         dalleImageGeneratorService = mock();
         storyService = mock();
+        imageBlobService = mock();
         restTemplate = mock();
 
         chatGPTService = new ChatGPTService(
@@ -54,6 +58,7 @@ class ChatGPTServiceTest {
                 storyBookService,
                 storyService,
                 dalleImageGeneratorService,
+                imageBlobService,
                 restTemplate
         );
     }
@@ -115,7 +120,7 @@ class ChatGPTServiceTest {
                 .thenReturn("ImageUrl");
 
         StoryBook storyBook = new StoryBook();
-        when(storyBookService.findStoryBookById(uuid)).thenReturn(Optional.of(storyBook));
+        when(storyBookService.getStoryBookById(uuid)).thenReturn(Optional.of(storyBook));
 
         when(storyService.saveStory("The Curious Case of Sammy the Squirrel",
                 1,
@@ -137,7 +142,7 @@ class ChatGPTServiceTest {
                         "The Mischievous Little Squirrel",
                         "The Magical Adventures of Coco the Cat",
                         "The Brave Teddy Bear's Treasure Hunt"
-                ));
+                ), null);
 
         assertEquals(expected, storyStartResponseDto);
     }
