@@ -134,7 +134,7 @@ public class ChatGPTService {
 
         String imageUrl = dalleImageGeneratorService.generateImage(storyText);
 
-        Optional<StoryBook> storyBook = storyBookService.findStoryBookById(storyBookId);
+        Optional<StoryBook> storyBook = storyBookService.getStoryBookById(storyBookId);
         //add image to blob storage
 
         String imageName = imageBlobService.addToBlobStorage(imageUrl, storyBookId, pageNumber);
