@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StoryService {
 
+    private static final Integer MAX_NUMBER_OF_STORIES = 5;
     private StoryRepository storyRepository;
 
     public StoryService(StoryRepository storyRepository) {
@@ -15,6 +16,9 @@ public class StoryService {
     }
 
     public Story saveStory(String storyContent, int pageNumber, String imageName, StoryBook storyBook) {
+        if (pageNumber == MAX_NUMBER_OF_STORIES) {
+            storyBook.setStatus(true);
+        }
         Story story = new Story(storyContent, pageNumber, imageName, storyBook);
         return storyRepository.save(story);
     }

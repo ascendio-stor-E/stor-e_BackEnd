@@ -30,17 +30,17 @@ public class DalleImageGeneratorService {
         this.openAiApiUrl = openAiApiUrl;
     }
 
-    public String generateImage(String storyLine) {
+    public String generateImage(String storyText) {
 
-        if (!StringUtils.hasText(storyLine)) {
-            throw new IllegalArgumentException("StoryLine must not be empty");
+        if (!StringUtils.hasText(storyText)) {
+            throw new IllegalArgumentException("storyText must not be empty");
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(openAiApiKey);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        String prompt = ILLUSTRATION_STYLE + storyLine;
+        String prompt = ILLUSTRATION_STYLE + storyText;
 
         DalleImageGenerationRequest requestBody = new DalleImageGenerationRequest(prompt, IMAGE_SIZE, NUMBER_OF_IMAGES);
 
