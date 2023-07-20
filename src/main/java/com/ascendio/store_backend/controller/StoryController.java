@@ -1,5 +1,6 @@
 package com.ascendio.store_backend.controller;
 
+import com.ascendio.store_backend.dto.RandomStoryResponseDto;
 import com.ascendio.store_backend.dto.StoryContinueResponseDto;
 import com.ascendio.store_backend.dto.StoryStartResponseDto;
 import com.ascendio.store_backend.model.Story;
@@ -49,4 +50,9 @@ public class StoryController {
         return ResponseEntity.ok(chatGPTService.continueStoryBook(optionChoice,conversationId,storyBookId,pageNumber));
     }
 
+    @PostMapping("/randomStory")
+    public ResponseEntity<RandomStoryResponseDto> createRandomStory(@RequestParam String option,
+                                                                    @RequestParam UUID storyBookId) {
+        return ResponseEntity.ok(chatGPTService.createRandomStory(option,storyBookId));
+    }
 }
