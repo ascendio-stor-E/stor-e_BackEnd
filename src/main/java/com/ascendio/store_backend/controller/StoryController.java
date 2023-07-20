@@ -25,7 +25,7 @@ public class StoryController {
         this.chatGPTService = chatGPTService;
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<Story>> getStories(@RequestParam UUID storyBookId) {
         return ResponseEntity.ok(service.getStories(storyBookId));
     }
