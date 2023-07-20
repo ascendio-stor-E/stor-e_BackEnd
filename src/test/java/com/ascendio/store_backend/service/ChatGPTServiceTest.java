@@ -25,18 +25,12 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ChatGPTServiceTest {
-    // @Mock
     StoryHistoryRepository storyHistoryRepository;
     StoryBookService storyBookService;
     DalleImageGeneratorService dalleImageGeneratorService;
     StoryService storyService;
-    //@Mock
     RestTemplate restTemplate;
-
-    //@Mock
     ImageBlobService imageBlobService;
-
-
     ChatGPTService chatGPTService;
 
     @BeforeEach
@@ -121,10 +115,10 @@ class ChatGPTServiceTest {
 
         StoryBook storyBook = new StoryBook();
         when(storyBookService.getStoryBookById(uuid)).thenReturn(Optional.of(storyBook));
-
+        when(imageBlobService.addToBlobStorage("ImageUrl",uuid,1)).thenReturn("ImageName");
         when(storyService.saveStory("The Curious Case of Sammy the Squirrel",
                 1,
-                "ImageUrl",
+                "ImageName",
                 storyBook)).thenReturn(new Story());
 
 
@@ -142,7 +136,7 @@ class ChatGPTServiceTest {
                         "The Mischievous Little Squirrel",
                         "The Magical Adventures of Coco the Cat",
                         "The Brave Teddy Bear's Treasure Hunt"
-                ), null);
+                ), "ImageName");
 
         assertEquals(expected, storyStartResponseDto);
     }
