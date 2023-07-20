@@ -47,6 +47,7 @@ class ChatGPTServiceTest {
                 "chatCompletionModel",
                 "initialPrompt",
                 "secondPrompt",
+                "randomPrompt",
                 "apikey",
                 storyHistoryRepository,
                 storyBookService,

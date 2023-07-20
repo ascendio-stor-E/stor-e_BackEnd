@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class ChatGPTService {
     final String chatCompletionModel;
     final String initialPrompt;
     final String secondPrompt;
+    final String randomPrompt;
     final String apikey;
     final StoryHistoryRepository storyHistoryRepository;
     final StoryBookService storyBookService;
@@ -41,6 +43,8 @@ public class ChatGPTService {
             String secondPrompt,
             @Value("${openai.api-key}")
             String apikey,
+            @Value("${openai.api-randomprompt}")
+            String randomPrompt,
             StoryHistoryRepository storyHistoryRepository,
             StoryBookService storyBookService,
             StoryService storyService,
@@ -55,10 +59,11 @@ public class ChatGPTService {
         this.apikey = apikey;
         this.storyHistoryRepository = storyHistoryRepository;
         this.storyBookService = storyBookService;
-        this.storyService=storyService;
+        this.storyService = storyService;
         this.dalleImageGeneratorService = dalleImageGeneratorService;
         this.imageBlobService = imageBlobService;
         this.restTemplate = restTemplate;
+        this.randomPrompt = randomPrompt;
     }
 
     public StoryStartResponseDto startStoryBook() {
@@ -151,6 +156,55 @@ public class ChatGPTService {
         return new StoryContinueResponseDto(part, storyText, options, imageName);
     }
 
+    public RandomStoryResponseDto createRandomStory(String option, UUID storyBookId) {
+
+        String prompt = randomPrompt.formatted(option);
+
+        long requestTime = System.currentTimeMillis();
+
+        ChatGPTResponse response = sendChatGPTRequest(
+                List.of(
+                        new ChatGPTMessage("user", prompt)
+                )
+        );
+
+        String content = response.choices().get(0).message().content();
+
+        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), content, "assistant", System.currentTimeMillis());
+        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), prompt, "user", requestTime);
+        storyHistoryRepository.saveStory(chatGPTRequestHistory);
+        storyHistoryRepository.saveStory(chatGPTResponseHistory);
+
+        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId).orElseThrow();
+
+        List<StoryContinueResponseDto> stories = Arrays
+                .stream(content.split("\n\n"))
+                .parallel()
+                .map(partsAndStories -> {
+                    String[] storyPartAndLine = partsAndStories.split(":");
+                    String part = storyPartAndLine[0].trim();
+                    String[] partAndNumber = part.split(" ");
+                    int pageNumber = Integer.parseInt(partAndNumber[1]);
+                    String story = storyPartAndLine[1].trim();
+
+                    String imageUrl = dalleImageGeneratorService.generateImage(story);
+
+                    String imageName = imageBlobService.addToBlobStorage(imageUrl, storyBook.getId(), pageNumber);
+
+                    storyService.saveStory(story, pageNumber, imageName, storyBook);
+
+                    if (pageNumber == 1) {
+                        storyBook.setCoverImage(imageName);
+                        storyBookService.updateStoryBook(storyBook);
+                    }
+
+                    return new StoryContinueResponseDto(part, story, List.of(), imageName);
+                })
+                .toList();
+
+        return new RandomStoryResponseDto(storyBook.getId(), stories);
+    }
+
     public ChatGPTResponse sendChatGPTRequest(List<ChatGPTMessage> messages) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + apikey);
@@ -185,4 +239,5 @@ public class ChatGPTService {
                 })
                 .toList();
     }
+
 }
