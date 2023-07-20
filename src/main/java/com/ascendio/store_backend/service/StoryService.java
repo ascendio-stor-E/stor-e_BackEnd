@@ -28,7 +28,7 @@ public class StoryService {
     }
 
     public List<Story> getStories(UUID storyBookId) {
-        return storyRepository.findAllByStoryBookId(storyBookId);
+        return storyRepository.findByStoryBookId(storyBookId);
     }
 
     public Optional<Story> getStoryById(UUID storyId) {

@@ -12,23 +12,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ChatGPTService {
-    final String chatCompletionURL;
-    final String chatCompletionModel;
-    final String initialPrompt;
-    final String secondPrompt;
-    final String apikey;
-    final StoryHistoryRepository storyHistoryRepository;
-    final StoryBookService storyBookService;
-    final StoryService storyService;
-    final DalleImageGeneratorService dalleImageGeneratorService;
-    final ImageBlobService imageBlobService;
-    final RestTemplate restTemplate;
-    final String apiEndpoint = "/v1/chat/completions";
+    private final String chatCompletionURL;
+    private final String chatCompletionModel;
+    private final String initialPrompt;
+    private final String secondPrompt;
+    private final String apikey;
+    private final StoryHistoryRepository storyHistoryRepository;
+    private final StoryBookService storyBookService;
+    private final StoryService storyService;
+    private final DalleImageGeneratorService dalleImageGeneratorService;
+    private final ImageBlobService imageBlobService;
+    private final RestTemplate restTemplate;
+    private final String apiEndpoint = "/v1/chat/completions";
 
     public ChatGPTService(
             @Value("${openai.api-url}")
@@ -108,8 +107,8 @@ public class ChatGPTService {
         ChatGPTResponse response = sendChatGPTRequest(
                 previousMessages
                         .stream()
-                        .map(storyhistory ->
-                                new ChatGPTMessage(storyhistory.getRole(), storyhistory.getContent())
+                        .map(storyHistory ->
+                                new ChatGPTMessage(storyHistory.getRole(), storyHistory.getContent())
                         )
                         .toList()
         );
@@ -134,18 +133,19 @@ public class ChatGPTService {
 
         String imageUrl = dalleImageGeneratorService.generateImage(storyText);
 
-        Optional<StoryBook> storyBook = storyBookService.getStoryBookById(storyBookId);
-        //add image to blob storage
+        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId);
 
+        //add image to blob storage
         String imageName = imageBlobService.addToBlobStorage(imageUrl, storyBookId, pageNumber);
 
         // save story here
-        storyService.saveStory(storyText, pageNumber, imageName, storyBook.get());
+        storyService.saveStory(storyText, pageNumber, imageName, storyBook);
 
-        //set first photo as cover image of storyBook
-        if (storyBook.isPresent() && pageNumber == 1) {
-            storyBook.get().setCoverImage(imageName);
-            storyBookService.updateStoryBook(storyBook.get());
+        //set first photo as cover image, and set the firstly selected option as title of storyBook
+        if (pageNumber == 1) {
+            storyBook.setCoverImage(imageName);
+            storyBook.setTitle(generateStoryTitle(previousMessages, optionChoice));
+            storyBookService.updateStoryBook(storyBook);
         }
 
         return new StoryContinueResponseDto(part, storyText, options, imageName);
@@ -184,5 +184,10 @@ public class ChatGPTService {
                     return s;
                 })
                 .toList();
+    }
+
+    private String generateStoryTitle(List<ChatGPTHistory> previousMessage, int optionChoice) {
+        String selectedOption = previousMessage.get(1).getContent().split("\n")[optionChoice - 1];
+        return selectedOption.substring(11, selectedOption.length() - 1);
     }
 }
