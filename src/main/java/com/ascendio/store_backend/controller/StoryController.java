@@ -51,7 +51,8 @@ public class StoryController {
     }
 
     @PostMapping("/randomStory")
-    public ResponseEntity<RandomStoryResponseDto> createRandomStory() {
-        return ResponseEntity.ok(chatGPTService.createRandomStory());
+    public ResponseEntity<RandomStoryResponseDto> createRandomStory(@RequestParam String option,
+                                                                    @RequestParam UUID storyBookId) {
+        return ResponseEntity.ok(chatGPTService.createRandomStory(option,storyBookId));
     }
 }

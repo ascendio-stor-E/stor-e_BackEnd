@@ -156,23 +156,26 @@ public class ChatGPTService {
         return new StoryContinueResponseDto(part, storyText, options, imageName);
     }
 
-    public RandomStoryResponseDto createRandomStory() {
+    public RandomStoryResponseDto createRandomStory(String option, UUID storyBookId) {
+
+        String prompt = randomPrompt.formatted(option);
+
         long requestTime = System.currentTimeMillis();
 
         ChatGPTResponse response = sendChatGPTRequest(
                 List.of(
-                        new ChatGPTMessage("user", randomPrompt)
+                        new ChatGPTMessage("user", prompt)
                 )
         );
 
         String content = response.choices().get(0).message().content();
 
         ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), content, "assistant", System.currentTimeMillis());
-        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), randomPrompt, "user", requestTime);
+        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), prompt, "user", requestTime);
         storyHistoryRepository.saveStory(chatGPTRequestHistory);
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
 
-        StoryBook storyBook = storyBookService.saveStoryBook();
+        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId).orElseThrow();
 
         List<StoryContinueResponseDto> stories = Arrays
                 .stream(content.split("\n\n"))
@@ -236,4 +239,5 @@ public class ChatGPTService {
                 })
                 .toList();
     }
+
 }
