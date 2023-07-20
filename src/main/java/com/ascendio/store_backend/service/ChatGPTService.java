@@ -176,7 +176,7 @@ public class ChatGPTService {
         storyHistoryRepository.saveStory(chatGPTRequestHistory);
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
 
-        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId).orElseThrow();
+        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId);
 
         List<StoryContinueResponseDto> stories = Arrays
                 .stream(content.split("\n\n"))

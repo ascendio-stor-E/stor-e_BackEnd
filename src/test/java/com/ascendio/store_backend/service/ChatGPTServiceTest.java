@@ -115,7 +115,7 @@ class ChatGPTServiceTest {
                 .thenReturn("ImageUrl");
 
         StoryBook storyBook = new StoryBook();
-        when(storyBookService.getStoryBookById(uuid)).thenReturn(Optional.of(storyBook));
+        when(storyBookService.getStoryBookById(uuid)).thenReturn(storyBook);
         when(imageBlobService.addToBlobStorage("ImageUrl",uuid,1)).thenReturn("ImageName");
         when(storyService.saveStory("The Curious Case of Sammy the Squirrel",
                 1,
