@@ -179,7 +179,7 @@ public class ChatGPTService {
                         s = s.substring(1);
                     }
                     if (s.endsWith("\"")) {
-                        s = s.substring(0, s.length() - 2);
+                        s = s.substring(0, s.length() - 1);
                     }
                     return s;
                 })
