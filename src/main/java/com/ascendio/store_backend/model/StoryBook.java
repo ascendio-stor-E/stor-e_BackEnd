@@ -1,5 +1,6 @@
 package com.ascendio.store_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -26,10 +27,12 @@ public class StoryBook {
     @Column(name = "status", nullable = false)
     private Boolean status = false;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id" , nullable = false)
     private StoryUser storyUser;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "storyBook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Story> stories = new ArrayList<>();
 
@@ -91,20 +94,20 @@ public class StoryBook {
         this.coverImage = coverImage;
     }
 
-    public StoryUser getUser() {
-        return storyUser;
-    }
+//    public StoryUser getUser() {
+//        return storyUser;
+//    }
+//
+//    public void setUser(StoryUser storyUser) {
+//        this.storyUser = storyUser;
+//    }
 
-    public void setUser(StoryUser storyUser) {
-        this.storyUser = storyUser;
-    }
-
-    public List<Story> getStoryPages() {
-        return stories;
-    }
-
-    public void setStoryPages(List<Story> stories) {
-        this.stories = stories;
-    }
+//    public List<Story> getStoryPages() {
+//        return stories;
+//    }
+//
+//    public void setStoryPages(List<Story> stories) {
+//        this.stories = stories;
+//    }
 }
 

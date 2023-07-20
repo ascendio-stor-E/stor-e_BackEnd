@@ -24,7 +24,7 @@ public class StoryBookService {
         StoryBook storyBook = new StoryBook();
         String userId = "bc644717-5970-4e0b-88a7-35d5f0931be1";
         Optional<StoryUser> user = userService.findUserById(UUID.fromString(userId));
-        storyBook.setUser(user.get());
+        storyBook.setStoryUser(user.get());
         return storyBookRepository.save(storyBook);
     }
 
@@ -32,8 +32,11 @@ public class StoryBookService {
         return storyBookRepository.findById(storyBookId);
     }
 
-
     public List<StoryBook> getStoryBooks(UUID userId) {
-        return storyBookRepository.findAllByUserId(userId);
+        return storyBookRepository.findAllByStoryUserId(userId);
+    }
+
+    public StoryBook updateStoryBook(StoryBook storyBook) {
+        return storyBookRepository.save(storyBook);
     }
 }
