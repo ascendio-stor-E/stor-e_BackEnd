@@ -30,4 +30,10 @@ public class StoryBookController {
         return ResponseEntity.ok(service.getStoryBookById(storyBookId));
     }
 
+    @DeleteMapping("/{storyBookId}")
+    public void deleteStoryBook (@PathVariable UUID storyBookId) {
+        service.deleteStoryBook(storyBookId);
+        ResponseEntity.noContent();
+    }
+
 }

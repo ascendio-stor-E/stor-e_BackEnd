@@ -39,4 +39,8 @@ public class StoryBookService {
     public StoryBook updateStoryBook(StoryBook storyBook) {
         return storyBookRepository.save(storyBook);
     }
+
+    public void deleteStoryBook(UUID storyBookId) {
+        storyBookRepository.deleteById(storyBookId);
+    }
 }
