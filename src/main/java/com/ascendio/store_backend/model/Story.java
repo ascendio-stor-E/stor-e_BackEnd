@@ -77,4 +77,5 @@ public class Story {
     public void setStoryBook(StoryBook storyBook) {
         this.storyBook = storyBook;
     }
+
 }
