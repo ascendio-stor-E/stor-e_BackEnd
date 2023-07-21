@@ -1,28 +1,46 @@
 package com.ascendio.store_backend.controller;
 
+import com.ascendio.store_backend.dto.RandomStoryResponseDto;
 import com.ascendio.store_backend.dto.StoryContinueResponseDto;
+import com.ascendio.store_backend.dto.StoryDTO;
 import com.ascendio.store_backend.dto.StoryStartResponseDto;
+import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.service.ChatGPTService;
 import com.ascendio.store_backend.service.StoryService;
+import com.ascendio.store_backend.util.Converter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/story")
 public class StoryController {
 
-    private StoryService service;
-    private ChatGPTService chatGPTService;
+    private final StoryService service;
+    private final ChatGPTService chatGPTService;
+
+    Converter converter;
 
     public StoryController(StoryService service, ChatGPTService chatGPTService) {
         this.service = service;
         this.chatGPTService = chatGPTService;
     }
 
-    @GetMapping
-    public ResponseEntity<String> getStories() {
-        return ResponseEntity.ok("Welcome to Stor-E");
+    @GetMapping("/all/{storyBookId}")
+    public ResponseEntity<List<StoryDTO>> getStories(@PathVariable UUID storyBookId) {
+
+        return ResponseEntity.ok(Converter.storyListToDTO(service.getStories(storyBookId)));
     }
+
+
+    @GetMapping("/{storyId}")
+    public ResponseEntity<Optional<Story>> getStoryById(@PathVariable UUID storyId) {
+        return ResponseEntity.ok(service.getStoryById(storyId));
+    }
+
 
     @PostMapping()
     public ResponseEntity<StoryStartResponseDto> createInitialStory() {
@@ -30,9 +48,16 @@ public class StoryController {
     }
 
     @PostMapping("/continueStory")
-    public ResponseEntity<StoryContinueResponseDto> createContinuesStory(@RequestParam int optionChoice, @RequestParam String conversationId) {
-        return ResponseEntity.ok(chatGPTService.continueStoryBook(optionChoice,conversationId));
+    public ResponseEntity<StoryContinueResponseDto> createContinuesStory(@RequestParam int optionChoice,
+                                                                         @RequestParam String conversationId,
+                                                                         @RequestParam UUID storyBookId,
+                                                                         @RequestParam int pageNumber) {
+        return ResponseEntity.ok(chatGPTService.continueStoryBook(optionChoice,conversationId,storyBookId,pageNumber));
     }
 
-
+    @PostMapping("/randomStory")
+    public ResponseEntity<RandomStoryResponseDto> createRandomStory(@RequestParam String option,
+                                                                    @RequestParam UUID storyBookId) {
+        return ResponseEntity.ok(chatGPTService.createRandomStory(option,storyBookId));
+    }
 }

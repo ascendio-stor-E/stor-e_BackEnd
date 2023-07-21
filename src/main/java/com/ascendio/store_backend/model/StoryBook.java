@@ -17,11 +17,14 @@ public class StoryBook {
     @GenericGenerator(name = "uuid-hibernate-generator", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "cover_image", nullable = false)
+    @Column(name = "cover_image")
     private String coverImage;
+
+    @Column(name = "status", nullable = false)
+    private Boolean status = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id" , nullable = false)
@@ -33,11 +36,34 @@ public class StoryBook {
     public StoryBook() {
     }
 
-    public StoryBook(UUID id, String title, String coverImage, StoryUser storyUser, List<Story> stories) {
+    public StoryBook(UUID id, String title, String coverImage, Boolean status) {
         this.id = id;
         this.title = title;
         this.coverImage = coverImage;
+        this.status = status;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
+    public StoryUser getStoryUser() {
+        return storyUser;
+    }
+
+    public void setStoryUser(StoryUser storyUser) {
         this.storyUser = storyUser;
+    }
+
+    public List<Story> getStories() {
+        return stories;
+    }
+
+    public void setStories(List<Story> stories) {
         this.stories = stories;
     }
 
@@ -65,20 +91,5 @@ public class StoryBook {
         this.coverImage = coverImage;
     }
 
-    public StoryUser getUser() {
-        return storyUser;
-    }
-
-    public void setUser(StoryUser storyUser) {
-        this.storyUser = storyUser;
-    }
-
-    public List<Story> getStoryPages() {
-        return stories;
-    }
-
-    public void setStoryPages(List<Story> stories) {
-        this.stories = stories;
-    }
 }
 
