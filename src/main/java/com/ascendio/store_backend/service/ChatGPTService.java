@@ -196,6 +196,7 @@ public class ChatGPTService {
 
                     if (pageNumber == 1) {
                         storyBook.setCoverImage(imageName);
+                        storyBook.setTitle(option);
                         storyBookService.updateStoryBook(storyBook);
                     }
 
