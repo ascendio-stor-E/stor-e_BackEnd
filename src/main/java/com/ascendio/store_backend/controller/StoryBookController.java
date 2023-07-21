@@ -30,9 +30,9 @@ public class StoryBookController {
     }
 
     @DeleteMapping("/{storyBookId}")
-    public void deleteStoryBook (@PathVariable UUID storyBookId) {
+    public ResponseEntity<String> deleteStoryBook (@PathVariable UUID storyBookId) {
         storyBookService.deleteStoryBook(storyBookId);
-        ResponseEntity.noContent();
+        return ResponseEntity.ok("Storybook deleted successfully");
     }
 
 }
