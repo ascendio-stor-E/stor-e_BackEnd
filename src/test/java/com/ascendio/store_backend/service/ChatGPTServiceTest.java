@@ -1,6 +1,7 @@
 package com.ascendio.store_backend.service;
 
 import com.ascendio.store_backend.dto.*;
+import com.ascendio.store_backend.model.ChatGPTHistory;
 import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.model.StoryBook;
 import com.ascendio.store_backend.repository.StoryHistoryRepository;
@@ -96,8 +97,15 @@ class ChatGPTServiceTest {
     public void continueStoryBookShouldGenerateStoryForGivenPartAnd3OptionsForNextPart(){
 
         UUID uuid =  UUID.randomUUID();
+        ArrayList<ChatGPTHistory> previousMessage = new ArrayList<>();
+        previousMessage.add(new ChatGPTHistory(uuid,"testConversationId1234",
+                "The Curious Case of Sammy the Squirrel",
+                "user",0L));
+        previousMessage.add(new ChatGPTHistory(uuid,"testConversationId1234",
+                "The Curious Case of Sammy the Squirrel",
+                "user",0L));
         when(storyHistoryRepository.findPreviousMessages(
-                "testConversationId1234")).thenReturn(new ArrayList<>());
+                "testConversationId1234")).thenReturn(previousMessage);
 
         when(restTemplate.postForObject(anyString(),any(),any())).thenReturn(
                 new ChatGPTResponse("testConversationId1234",
@@ -115,7 +123,7 @@ class ChatGPTServiceTest {
                 .thenReturn("ImageUrl");
 
         StoryBook storyBook = new StoryBook();
-        when(storyBookService.getStoryBookById(uuid)).thenReturn(Optional.of(storyBook));
+        when(storyBookService.getStoryBookById(uuid)).thenReturn(storyBook);
         when(imageBlobService.addToBlobStorage("ImageUrl",uuid,1)).thenReturn("ImageName");
         when(storyService.saveStory("The Curious Case of Sammy the Squirrel",
                 1,

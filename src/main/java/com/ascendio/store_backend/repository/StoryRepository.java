@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface StoryRepository extends JpaRepository<Story, UUID> {
-    List<Story> findAllByStoryBookId(UUID storyBookId);
+    List<Story> findByStoryBookId(UUID storyBookId);
 
 }

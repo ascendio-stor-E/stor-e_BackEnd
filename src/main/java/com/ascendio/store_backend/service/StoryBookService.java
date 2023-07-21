@@ -28,12 +28,16 @@ public class StoryBookService {
         return storyBookRepository.save(storyBook);
     }
 
-    public Optional<StoryBook> getStoryBookById(UUID storyBookId) {
-        return storyBookRepository.findById(storyBookId);
+    public StoryBook getStoryBookById(UUID storyBookId) {
+        Optional<StoryBook> storyBook = storyBookRepository.findById(storyBookId);
+        if (storyBook.isPresent()) {
+            return storyBook.get();
+        }
+        throw new IllegalArgumentException("StoryBook not found for storyBookId : " + storyBookId);
     }
 
     public List<StoryBook> getStoryBooks(UUID userId) {
-        return storyBookRepository.findAllByStoryUserId(userId);
+       return storyBookRepository.findAllByStoryUserId(userId);
     }
 
     public StoryBook updateStoryBook(StoryBook storyBook) {
