@@ -44,4 +44,8 @@ public class Converter {
         return storyBookResponses;
     }
 
+    public static List<StoryDTO> storyListToDTO(List<Story> stories) {
+        return stories.stream().map(s -> new StoryDTO(s.getId(), s.getTextContent(), s.getPageNumber(), s.getImage())).toList();
+    }
+
 }
