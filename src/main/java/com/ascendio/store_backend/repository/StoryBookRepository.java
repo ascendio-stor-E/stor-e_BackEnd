@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface StoryBookRepository extends JpaRepository<StoryBook, UUID> {
 
-    List<StoryBook> findAllByStoryUserIdAndStatus(UUID userId, StoryBookStatus storyBookStatus);
+    List<StoryBook> findAllByStoryUserIdAndStatusIsNot(UUID userId, StoryBookStatus storyBookStatus);
 
     Optional<StoryBook> findByIdAndStatus(UUID storyBookId, StoryBookStatus storyBookStatus);
 }

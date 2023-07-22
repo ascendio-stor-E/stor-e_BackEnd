@@ -23,7 +23,7 @@ public class StoryBook {
     @Column(name = "cover_image")
     private String coverImage;
 
-    //0 means not saved , 1 means saved , 2 means deleted
+    //0 means draft , 1 means completed , 2 means favourite , 3 means deleted
     @Column(name = "status", nullable = false)
     private StoryBookStatus status;
 
