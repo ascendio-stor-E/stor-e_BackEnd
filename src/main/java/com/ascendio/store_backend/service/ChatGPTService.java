@@ -2,7 +2,9 @@ package com.ascendio.store_backend.service;
 
 import com.ascendio.store_backend.dto.*;
 import com.ascendio.store_backend.model.ChatGPTHistory;
+import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.model.StoryBook;
+import com.ascendio.store_backend.model.StoryBookStatus;
 import com.ascendio.store_backend.repository.StoryHistoryRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -13,7 +15,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ChatGPTService {
@@ -84,7 +88,6 @@ public class ChatGPTService {
 
         List<String> options = getOptions(content.split("\n"));
 
-//        Create story book here
         StoryBook storyBook = storyBookService.createStoryBook();
 
         return new StoryStartResponseDto(options, response.id(), storyBook.getId());
@@ -136,25 +139,33 @@ public class ChatGPTService {
 
         List<String> options = getOptions(lines);
 
+        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId,
+                Set.of(StoryBookStatus.DRAFT));
 
-        String imageUrl = dalleImageGeneratorService.generateImage(storyText);
+        Story savedStory = storyService.saveStory(storyText, pageNumber, null, storyBook);
 
-        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId);
-
-        //add image to blob storage
-        String imageName = imageBlobService.addToBlobStorage(imageUrl, storyBookId, pageNumber);
-
-        // save story here
-        storyService.saveStory(storyText, pageNumber, imageName, storyBook);
-
-        //set first photo as cover image, and set the firstly selected option as title of storyBook
         if (pageNumber == 1) {
-            storyBook.setCoverImage(imageName);
             storyBook.setTitle(generateStoryTitle(previousMessages, optionChoice));
             storyBookService.updateStoryBook(storyBook);
         }
 
-        return new StoryContinueResponseDto(part, storyText, options, imageName);
+        CompletableFuture.runAsync(() -> createStoryImage(savedStory));
+
+        return new StoryContinueResponseDto(part, storyText, options, null, savedStory.getId());
+    }
+
+    public void createStoryImage(Story story){
+        String imageUrl = dalleImageGeneratorService.generateImage(story.getTextContent());
+
+        String imageName = imageBlobService.addToBlobStorage(imageUrl, story.getStoryBook().getId(), story.getPageNumber());
+
+        storyService.updateStoryImage(story, imageName);
+
+        if (story.getPageNumber() == 1) {
+            story.getStoryBook().setCoverImage(imageName);
+            storyBookService.updateStoryBook(story.getStoryBook());
+        }
+
     }
 
     public RandomStoryResponseDto createRandomStory(String option, UUID storyBookId) {
@@ -176,7 +187,8 @@ public class ChatGPTService {
         storyHistoryRepository.saveStory(chatGPTRequestHistory);
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
 
-        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId);
+        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId,
+                Set.of(StoryBookStatus.DRAFT));
 
         List<StoryContinueResponseDto> stories = Arrays
                 .stream(content.split("\n\n"))
@@ -192,7 +204,7 @@ public class ChatGPTService {
 
                     String imageName = imageBlobService.addToBlobStorage(imageUrl, storyBook.getId(), pageNumber);
 
-                    storyService.saveStory(story, pageNumber, imageName, storyBook);
+                    Story savedStory = storyService.saveStory(story, pageNumber, imageName, storyBook);
 
                     if (pageNumber == 1) {
                         storyBook.setCoverImage(imageName);
@@ -200,7 +212,7 @@ public class ChatGPTService {
                         storyBookService.updateStoryBook(storyBook);
                     }
 
-                    return new StoryContinueResponseDto(part, story, List.of(), imageName);
+                    return new StoryContinueResponseDto(part, story, List.of(), imageName, savedStory.getId());
                 })
                 .toList();
 

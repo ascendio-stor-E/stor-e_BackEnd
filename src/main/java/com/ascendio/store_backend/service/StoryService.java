@@ -32,6 +32,11 @@ public class StoryService {
         return storyRepository.save(story);
     }
 
+    public Story updateStoryImage(Story story, String imageName){
+        story.setImage(imageName);
+        return storyRepository.save(story);
+    }
+
     public List<Story> getStories(UUID storyBookId) {
         return storyBookRepository.findById(storyBookId)
                 .map(sb -> sb.getStories()).orElseGet(() -> new ArrayList<>());

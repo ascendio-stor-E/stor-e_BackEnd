@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -93,6 +94,7 @@ class ChatGPTServiceTest {
     public void continueStoryBookShouldGenerateStoryForGivenPartAnd3OptionsForNextPart(){
 
         UUID uuid =  UUID.randomUUID();
+        UUID uuid2 =  UUID.randomUUID();
         ArrayList<ChatGPTHistory> previousMessage = new ArrayList<>();
         previousMessage.add(new ChatGPTHistory(uuid,"testConversationId1234",
                 "The Curious Case of Sammy the Squirrel",
@@ -119,12 +121,14 @@ class ChatGPTServiceTest {
                 .thenReturn("ImageUrl");
 
         StoryBook storyBook = new StoryBook();
-        when(storyBookService.getStoryBookById(uuid)).thenReturn(storyBook);
+        Story story = new Story("The Curious Case of Sammy the Squirrel",1,null,storyBook);
+        story.setId(uuid2);
+        when(storyBookService.getStoryBookById(uuid, Set.of(StoryBookStatus.DRAFT))).thenReturn(storyBook);
         when(imageBlobService.addToBlobStorage("ImageUrl",uuid,1)).thenReturn("ImageName");
         when(storyService.saveStory("The Curious Case of Sammy the Squirrel",
                 1,
-                "ImageName",
-                storyBook)).thenReturn(new Story());
+                null,
+                storyBook)).thenReturn(story);
 
 
         StoryContinueResponseDto storyStartResponseDto = chatGPTService.continueStoryBook(
@@ -141,7 +145,7 @@ class ChatGPTServiceTest {
                         "The Mischievous Little Squirrel",
                         "The Magical Adventures of Coco the Cat",
                         "The Brave Teddy Bear's Treasure Hunt"
-                ), "ImageName");
+                ), null, uuid2);
 
         assertEquals(expected, storyStartResponseDto);
     }
