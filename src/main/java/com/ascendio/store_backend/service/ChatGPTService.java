@@ -85,7 +85,7 @@ public class ChatGPTService {
         List<String> options = getOptions(content.split("\n"));
 
 //        Create story book here
-        StoryBook storyBook = storyBookService.saveStoryBook();
+        StoryBook storyBook = storyBookService.createStoryBook();
 
         return new StoryStartResponseDto(options, response.id(), storyBook.getId());
     }
@@ -196,6 +196,7 @@ public class ChatGPTService {
 
                     if (pageNumber == 1) {
                         storyBook.setCoverImage(imageName);
+                        storyBook.setTitle(option);
                         storyBookService.updateStoryBook(storyBook);
                     }
 

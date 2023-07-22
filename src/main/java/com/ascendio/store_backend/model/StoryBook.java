@@ -23,8 +23,9 @@ public class StoryBook {
     @Column(name = "cover_image")
     private String coverImage;
 
+    //0 means not saved , 1 means saved , 2 means deleted
     @Column(name = "status", nullable = false)
-    private Boolean status = false;
+    private StoryBookStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id" , nullable = false)
@@ -36,18 +37,18 @@ public class StoryBook {
     public StoryBook() {
     }
 
-    public StoryBook(UUID id, String title, String coverImage, Boolean status) {
+    public StoryBook(UUID id, String title, String coverImage, StoryBookStatus status) {
         this.id = id;
         this.title = title;
         this.coverImage = coverImage;
         this.status = status;
     }
 
-    public Boolean getStatus() {
+    public StoryBookStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(StoryBookStatus status) {
         this.status = status;
     }
 
