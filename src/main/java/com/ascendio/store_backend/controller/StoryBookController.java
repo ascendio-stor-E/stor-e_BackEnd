@@ -2,6 +2,7 @@ package com.ascendio.store_backend.controller;
 
 import com.ascendio.store_backend.dto.StoryBookResponseDto;
 import com.ascendio.store_backend.dto.StoryDTO;
+import com.ascendio.store_backend.model.StoryBookStatus;
 import com.ascendio.store_backend.service.StoryBookService;
 import com.ascendio.store_backend.service.StoryService;
 import com.ascendio.store_backend.util.Converter;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -30,7 +32,10 @@ public class StoryBookController {
 
     @GetMapping("/{storyBookId}")
     public ResponseEntity<StoryBookResponseDto> getStoryBookById(@PathVariable UUID storyBookId) {
-        return ResponseEntity.ok(Converter.toStoryBookResponseDto(storyBookService.getStoryBookById(storyBookId)));
+        return ResponseEntity.ok(Converter
+                .toStoryBookResponseDto(storyBookService
+                        .getStoryBookById(storyBookId,
+                        Set.of(StoryBookStatus.COMPLETE, StoryBookStatus.DRAFT, StoryBookStatus.FAVOURITE))));
     }
 
     @DeleteMapping("/{storyBookId}")

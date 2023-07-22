@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -31,8 +32,9 @@ public class StoryBookService {
         return storyBookRepository.save(storyBook);
     }
 
-    public StoryBook getStoryBookById(UUID storyBookId) {
-        Optional<StoryBook> storyBook = storyBookRepository.findByIdAndStatus(storyBookId, StoryBookStatus.COMPLETE);
+    public StoryBook getStoryBookById(UUID storyBookId, Set<StoryBookStatus> statuses) {
+        Optional<StoryBook> storyBook = storyBookRepository.findByIdAndStatusIn(storyBookId,
+                statuses);
         if (storyBook.isPresent()) {
             return storyBook.get();
         }

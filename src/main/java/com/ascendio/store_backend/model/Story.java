@@ -21,7 +21,7 @@ public class Story {
     @Column(name = "page_number", nullable = false)
     private Integer pageNumber;
 
-    @Column(name = "image", nullable = false, length = 2000)
+    @Column(name = "image", length = 2000)
     private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)

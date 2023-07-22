@@ -1,24 +1,18 @@
 package com.ascendio.store_backend.controller;
 
-import com.ascendio.store_backend.dto.RandomStoryResponseDto;
-import com.ascendio.store_backend.dto.StoryContinueResponseDto;
-import com.ascendio.store_backend.dto.StoryDTO;
-import com.ascendio.store_backend.dto.StoryStartResponseDto;
-import com.ascendio.store_backend.model.Story;
+import com.ascendio.store_backend.dto.*;
 import com.ascendio.store_backend.service.ChatGPTService;
 import com.ascendio.store_backend.service.StoryService;
 import com.ascendio.store_backend.util.Converter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/story")
 public class StoryController {
-
     private final StoryService storyService;
     private final ChatGPTService chatGPTService;
 
@@ -47,7 +41,8 @@ public class StoryController {
     }
 
     @GetMapping("/{storyId}")
-    public ResponseEntity<Optional<Story>> getStoryById(@PathVariable UUID storyId) {
-        return ResponseEntity.ok(storyService.getStoryById(storyId));
+    public ResponseEntity<Optional<StoryResponseDto>> getStoryById(@PathVariable UUID storyId) {
+        return ResponseEntity.ok(storyService.getStoryById(storyId).map(story ->
+                Converter.toStoryResponseDto(story)));
     }
 }
