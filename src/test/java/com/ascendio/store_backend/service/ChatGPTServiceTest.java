@@ -4,24 +4,20 @@ import com.ascendio.store_backend.dto.*;
 import com.ascendio.store_backend.model.ChatGPTHistory;
 import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.model.StoryBook;
+import com.ascendio.store_backend.model.StoryBookStatus;
 import com.ascendio.store_backend.repository.StoryHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,12 +69,12 @@ class ChatGPTServiceTest {
                                                         "Option 3:The Brave Teddy Bear's Treasure Hunt"))
                         )));
 
-        when(storyBookService.saveStoryBook()).thenReturn(
+        when(storyBookService.createStoryBook()).thenReturn(
                 new StoryBook(
                         uuid,
                         "title",
                         "image",
-                        true));
+                        StoryBookStatus.SAVED));
 
         StoryStartResponseDto storyStartResponseDto = chatGPTService.startStoryBook();
 

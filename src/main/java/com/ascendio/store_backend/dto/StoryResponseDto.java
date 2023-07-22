@@ -1,5 +1,7 @@
 package com.ascendio.store_backend.dto;
 
+import com.ascendio.store_backend.model.StoryBookStatus;
+
 import java.util.UUID;
 
 public record StoryResponseDto(UUID id,
@@ -9,5 +11,5 @@ public record StoryResponseDto(UUID id,
                                UUID storyBookId,
                                String storyBookTitle,
                                String coverImage,
-                               Boolean status) {
+                               StoryBookStatus status) {
 }

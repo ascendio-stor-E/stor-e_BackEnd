@@ -10,8 +10,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class CustomExceptionAdvice {
 
     @ExceptionHandler(value = {ImageSaveException.class})
-    public ResponseEntity<GenericExceptionDto> imageSaveException(RuntimeException ex) {
+    public ResponseEntity<GenericExceptionDto> imageSaveException(ImageSaveException ex) {
         return ResponseEntity.internalServerError()
                 .body(new GenericExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(value = {StoryBookNotFoundException.class})
+    public ResponseEntity<GenericExceptionDto> storyBookNotFoundException(StoryBookNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new GenericExceptionDto(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
     }
 }
