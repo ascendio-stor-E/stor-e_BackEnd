@@ -74,7 +74,7 @@ class ChatGPTServiceTest {
                         uuid,
                         "title",
                         "image",
-                        StoryBookStatus.SAVED));
+                        StoryBookStatus.COMPLETE));
 
         StoryStartResponseDto storyStartResponseDto = chatGPTService.startStoryBook();
 

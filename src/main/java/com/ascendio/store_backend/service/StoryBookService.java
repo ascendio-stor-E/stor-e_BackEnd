@@ -27,24 +27,21 @@ public class StoryBookService {
         String userId = "bc644717-5970-4e0b-88a7-35d5f0931be1";
         Optional<StoryUser> user = userService.findUserById(UUID.fromString(userId));
         storyBook.setStoryUser(user.get());
-        storyBook.setStatus(StoryBookStatus.NOT_SAVED);
+        storyBook.setStatus(StoryBookStatus.DRAFT);
         return storyBookRepository.save(storyBook);
     }
 
     public StoryBook getStoryBookById(UUID storyBookId) {
-        Optional<StoryBook> storyBook = storyBookRepository.findByIdAndStatus(storyBookId, StoryBookStatus.SAVED);
+        Optional<StoryBook> storyBook = storyBookRepository.findByIdAndStatus(storyBookId, StoryBookStatus.COMPLETE);
         if (storyBook.isPresent()) {
             return storyBook.get();
         }
         throw new StoryBookNotFoundException(storyBookId);
     }
 
+    // get all storybooks (DRAFT, COMPLETE, FAVOURITES) at one backend call from frontend)
     public List<StoryBook> getStoryBooks(UUID userId) {
-       return storyBookRepository.findAllByStoryUserIdAndStatus(userId, StoryBookStatus.SAVED);
-    }
-
-    public List<StoryBook> getDraftStoryBooks(UUID userId) {
-        return storyBookRepository.findAllByStoryUserIdAndStatus(userId, StoryBookStatus.NOT_SAVED);
+       return storyBookRepository.findAllByStoryUserIdAndStatusIsNot(userId, StoryBookStatus.DELETED);
     }
 
     public StoryBook updateStoryBook(StoryBook storyBook) {

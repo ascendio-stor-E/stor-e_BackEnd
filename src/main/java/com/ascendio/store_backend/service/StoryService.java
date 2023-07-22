@@ -26,7 +26,7 @@ public class StoryService {
 
     public Story saveStory(String storyContent, int pageNumber, String imageName, StoryBook storyBook) {
         if (pageNumber == MAX_NUMBER_OF_STORIES) {
-            storyBook.setStatus(StoryBookStatus.SAVED);
+            storyBook.setStatus(StoryBookStatus.COMPLETE);
         }
         Story story = new Story(storyContent, pageNumber, imageName, storyBook);
         return storyRepository.save(story);

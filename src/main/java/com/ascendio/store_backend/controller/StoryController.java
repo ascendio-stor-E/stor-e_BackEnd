@@ -19,28 +19,13 @@ import java.util.UUID;
 @RequestMapping("/api/story")
 public class StoryController {
 
-    private final StoryService service;
+    private final StoryService storyService;
     private final ChatGPTService chatGPTService;
 
-    Converter converter;
-
-    public StoryController(StoryService service, ChatGPTService chatGPTService) {
-        this.service = service;
+    public StoryController(StoryService storyService, ChatGPTService chatGPTService) {
+        this.storyService = storyService;
         this.chatGPTService = chatGPTService;
     }
-
-    @GetMapping("/all/{storyBookId}")
-    public ResponseEntity<List<StoryDTO>> getStories(@PathVariable UUID storyBookId) {
-
-        return ResponseEntity.ok(Converter.storyListToDTO(service.getStories(storyBookId)));
-    }
-
-
-    @GetMapping("/{storyId}")
-    public ResponseEntity<Optional<Story>> getStoryById(@PathVariable UUID storyId) {
-        return ResponseEntity.ok(service.getStoryById(storyId));
-    }
-
 
     @PostMapping()
     public ResponseEntity<StoryStartResponseDto> createInitialStory() {
@@ -59,5 +44,10 @@ public class StoryController {
     public ResponseEntity<RandomStoryResponseDto> createRandomStory(@RequestParam String option,
                                                                     @RequestParam UUID storyBookId) {
         return ResponseEntity.ok(chatGPTService.createRandomStory(option,storyBookId));
+    }
+
+    @GetMapping("/{storyId}")
+    public ResponseEntity<Optional<Story>> getStoryById(@PathVariable UUID storyId) {
+        return ResponseEntity.ok(storyService.getStoryById(storyId));
     }
 }
