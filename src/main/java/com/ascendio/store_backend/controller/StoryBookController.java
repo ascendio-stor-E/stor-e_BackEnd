@@ -3,9 +3,11 @@ package com.ascendio.store_backend.controller;
 import com.ascendio.store_backend.dto.store.StoryBookResponseDto;
 import com.ascendio.store_backend.dto.store.StoryDTO;
 import com.ascendio.store_backend.model.StoryBookStatus;
+import com.ascendio.store_backend.service.DownloadPdfService;
 import com.ascendio.store_backend.service.StoryBookService;
 import com.ascendio.store_backend.service.StoryService;
 import com.ascendio.store_backend.util.Converter;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,10 +21,12 @@ public class StoryBookController {
 
     private StoryBookService storyBookService;
     private StoryService storyService;
+    private DownloadPdfService downloadPdfService;
 
-    public StoryBookController(StoryBookService storyBookService, StoryService storyService) {
+    public StoryBookController(StoryBookService storyBookService, StoryService storyService, DownloadPdfService downloadPdfService) {
         this.storyBookService = storyBookService;
         this.storyService = storyService;
+        this.downloadPdfService = downloadPdfService;
     }
 
     @GetMapping
@@ -54,4 +58,9 @@ public class StoryBookController {
         storyBookService.updateFavouriteStoryBook(storyBookId);
         return ResponseEntity.ok().build();
     }
+    @GetMapping(value = "/{storyBookId}/download", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> downloadStoryBookPdf(@PathVariable UUID storyBookId) {
+        return ResponseEntity.ok(downloadPdfService.generateStoryBookPdf(storyBookId));
+    }
+
 }
