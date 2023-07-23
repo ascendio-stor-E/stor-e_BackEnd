@@ -22,6 +22,9 @@ public class StoryUser {
     @Column(name = "email", nullable = false)
     private String email;
 
+    @Column(name = "age")
+    private Integer age;
+
     @OneToMany(mappedBy = "storyUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoryBook> storyBooks = new ArrayList<>();
 
@@ -57,6 +60,14 @@ public class StoryUser {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
     public List<StoryBook> getStoryBooks() {

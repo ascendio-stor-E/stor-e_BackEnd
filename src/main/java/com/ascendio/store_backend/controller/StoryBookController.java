@@ -1,7 +1,7 @@
 package com.ascendio.store_backend.controller;
 
-import com.ascendio.store_backend.dto.StoryBookResponseDto;
-import com.ascendio.store_backend.dto.StoryDTO;
+import com.ascendio.store_backend.dto.store.StoryBookResponseDto;
+import com.ascendio.store_backend.dto.store.StoryDTO;
 import com.ascendio.store_backend.model.StoryBookStatus;
 import com.ascendio.store_backend.service.StoryBookService;
 import com.ascendio.store_backend.service.StoryService;
@@ -49,4 +49,9 @@ public class StoryBookController {
         return ResponseEntity.ok(Converter.storyListToDTO(storyService.getStories(storyBookId)));
     }
 
+    @PatchMapping("/{storyBookId}/favourite")
+    public ResponseEntity<Void> updateFavouriteStoryBook(@PathVariable UUID storyBookId) {
+        storyBookService.updateFavouriteStoryBook(storyBookId);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -1,4 +1,4 @@
-package com.ascendio.store_backend.dto;
+package com.ascendio.store_backend.dto.dalle;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

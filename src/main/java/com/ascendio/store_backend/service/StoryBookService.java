@@ -43,11 +43,19 @@ public class StoryBookService {
 
     // get all storybooks (DRAFT, COMPLETE, FAVOURITES) at one backend call from frontend)
     public List<StoryBook> getStoryBooks(UUID userId) {
-       return storyBookRepository.findAllByStoryUserIdAndStatusIsNot(userId, StoryBookStatus.DELETED);
+       return storyBookRepository.findAllByStoryUserIdAndStatusIsNotOrderByStatusDescLastModifiedDateDesc(userId, StoryBookStatus.DELETED);
     }
 
     public StoryBook updateStoryBook(StoryBook storyBook) {
         return storyBookRepository.save(storyBook);
+    }
+
+    public void updateFavouriteStoryBook(UUID storyBookId) {
+        storyBookRepository.findById(storyBookId).ifPresent(storyBook -> {
+            storyBook.setStatus(
+                    storyBook.getStatus().equals(StoryBookStatus.COMPLETE) ? StoryBookStatus.FAVOURITE : StoryBookStatus.COMPLETE);
+            storyBookRepository.save(storyBook);
+        });
     }
 
     public void deleteStoryBook(UUID storyBookId) {
