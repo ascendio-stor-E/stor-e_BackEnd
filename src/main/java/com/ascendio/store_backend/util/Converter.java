@@ -1,6 +1,8 @@
 package com.ascendio.store_backend.util;
 
-import com.ascendio.store_backend.dto.*;
+import com.ascendio.store_backend.dto.store.StoryBookResponseDto;
+import com.ascendio.store_backend.dto.store.StoryDTO;
+import com.ascendio.store_backend.dto.store.StoryResponseDto;
 import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.model.StoryBook;
 
@@ -28,9 +30,8 @@ public class Converter {
                 storyBook.getTitle(),
                 storyBook.getCoverImage(),
                 storyBook.getStatus(),
-                storyBook.getStoryUser().getId(),
-                storyBook.getStoryUser().getName(),
-                storyBook.getStoryUser().getEmail()
+                storyBook.getStories().size(),
+                storyBook.getLastModifiedDate()
         );
     }
 

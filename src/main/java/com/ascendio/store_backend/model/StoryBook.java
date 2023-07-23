@@ -3,6 +3,7 @@ package com.ascendio.store_backend.model;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +28,10 @@ public class StoryBook {
     @Column(name = "status", nullable = false)
     private StoryBookStatus status;
 
+    @Column(name = "modified_date_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime lastModifiedDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id" , nullable = false)
     private StoryUser storyUser;
@@ -42,30 +47,6 @@ public class StoryBook {
         this.title = title;
         this.coverImage = coverImage;
         this.status = status;
-    }
-
-    public StoryBookStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(StoryBookStatus status) {
-        this.status = status;
-    }
-
-    public StoryUser getStoryUser() {
-        return storyUser;
-    }
-
-    public void setStoryUser(StoryUser storyUser) {
-        this.storyUser = storyUser;
-    }
-
-    public List<Story> getStories() {
-        return stories;
-    }
-
-    public void setStories(List<Story> stories) {
-        this.stories = stories;
     }
 
     public UUID getId() {
@@ -90,6 +71,38 @@ public class StoryBook {
 
     public void setCoverImage(String coverImage) {
         this.coverImage = coverImage;
+    }
+
+    public StoryBookStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(StoryBookStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public StoryUser getStoryUser() {
+        return storyUser;
+    }
+
+    public void setStoryUser(StoryUser storyUser) {
+        this.storyUser = storyUser;
+    }
+
+    public List<Story> getStories() {
+        return stories;
+    }
+
+    public void setStories(List<Story> stories) {
+        this.stories = stories;
     }
 
 }

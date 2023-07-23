@@ -1,6 +1,9 @@
 package com.ascendio.store_backend.controller;
 
-import com.ascendio.store_backend.dto.*;
+import com.ascendio.store_backend.dto.store.RandomStoryResponseDto;
+import com.ascendio.store_backend.dto.store.StoryContinueResponseDto;
+import com.ascendio.store_backend.dto.store.StoryResponseDto;
+import com.ascendio.store_backend.dto.store.StoryStartResponseDto;
 import com.ascendio.store_backend.service.ChatGPTService;
 import com.ascendio.store_backend.service.StoryService;
 import com.ascendio.store_backend.util.Converter;

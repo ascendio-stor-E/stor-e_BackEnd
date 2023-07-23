@@ -1,6 +1,6 @@
 package com.ascendio.store_backend.controller;
 
-import com.ascendio.store_backend.dto.DalleImageResponse;
+import com.ascendio.store_backend.dto.dalle.DalleImageResponse;
 import com.ascendio.store_backend.service.DalleImageGeneratorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

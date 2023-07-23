@@ -1,6 +1,10 @@
 package com.ascendio.store_backend.service;
 
-import com.ascendio.store_backend.dto.*;
+import com.ascendio.store_backend.dto.chatgpt.ChatGPTMessage;
+import com.ascendio.store_backend.dto.chatgpt.ChatGPTResponse;
+import com.ascendio.store_backend.dto.chatgpt.Choice;
+import com.ascendio.store_backend.dto.store.StoryContinueResponseDto;
+import com.ascendio.store_backend.dto.store.StoryStartResponseDto;
 import com.ascendio.store_backend.model.ChatGPTHistory;
 import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.model.StoryBook;

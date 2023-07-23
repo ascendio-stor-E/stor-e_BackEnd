@@ -6,6 +6,7 @@ import com.azure.storage.blob.*;
 import com.azure.storage.blob.models.DownloadRetryOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -36,6 +37,7 @@ public class AzureBlobService {
         }
     }
 
+    @Cacheable("images")
     public byte[] getImage(String imageName) {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         downloadBlobFromAzure(bout, azureBlobConfig.getStorageContainer(), imageName);

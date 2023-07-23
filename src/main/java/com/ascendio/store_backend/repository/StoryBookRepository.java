@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface StoryBookRepository extends JpaRepository<StoryBook, UUID> {
 
-    List<StoryBook> findAllByStoryUserIdAndStatusIsNot(UUID userId, StoryBookStatus storyBookStatus);
+    List<StoryBook> findAllByStoryUserIdAndStatusIsNotOrderByStatusDescLastModifiedDateDesc(UUID userId, StoryBookStatus status);
 
     Optional<StoryBook> findByIdAndStatusIn(UUID storyBookId, Set<StoryBookStatus> storyBookStatuses);
 }

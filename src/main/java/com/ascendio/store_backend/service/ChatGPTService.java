@@ -1,6 +1,11 @@
 package com.ascendio.store_backend.service;
 
-import com.ascendio.store_backend.dto.*;
+import com.ascendio.store_backend.dto.chatgpt.ChatGPTMessage;
+import com.ascendio.store_backend.dto.chatgpt.ChatGPTRequest;
+import com.ascendio.store_backend.dto.chatgpt.ChatGPTResponse;
+import com.ascendio.store_backend.dto.store.RandomStoryResponseDto;
+import com.ascendio.store_backend.dto.store.StoryContinueResponseDto;
+import com.ascendio.store_backend.dto.store.StoryStartResponseDto;
 import com.ascendio.store_backend.model.ChatGPTHistory;
 import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.model.StoryBook;
@@ -13,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -146,8 +152,9 @@ public class ChatGPTService {
 
         if (pageNumber == 1) {
             storyBook.setTitle(generateStoryTitle(previousMessages, optionChoice));
-            storyBookService.updateStoryBook(storyBook);
         }
+        storyBook.setLastModifiedDate(LocalDateTime.now());
+        storyBookService.updateStoryBook(storyBook);
 
         CompletableFuture.runAsync(() -> createStoryImage(savedStory));
 
@@ -165,7 +172,6 @@ public class ChatGPTService {
             story.getStoryBook().setCoverImage(imageName);
             storyBookService.updateStoryBook(story.getStoryBook());
         }
-
     }
 
     public RandomStoryResponseDto createRandomStory(String option, UUID storyBookId) {
@@ -208,13 +214,15 @@ public class ChatGPTService {
 
                     if (pageNumber == 1) {
                         storyBook.setCoverImage(imageName);
-                        storyBook.setTitle(option);
-                        storyBookService.updateStoryBook(storyBook);
                     }
 
                     return new StoryContinueResponseDto(part, story, List.of(), imageName, savedStory.getId());
                 })
                 .toList();
+
+        storyBook.setTitle(option);
+        storyBook.setLastModifiedDate(LocalDateTime.now());
+        storyBookService.updateStoryBook(storyBook);
 
         return new RandomStoryResponseDto(storyBook.getId(), stories);
     }

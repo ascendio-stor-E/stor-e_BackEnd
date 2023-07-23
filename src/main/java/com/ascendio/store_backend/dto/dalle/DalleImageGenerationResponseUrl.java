@@ -1,4 +1,4 @@
-package com.ascendio.store_backend.dto;
+package com.ascendio.store_backend.dto.dalle;
 
 /*
 * This class is for taking response urls from Dall-E API
