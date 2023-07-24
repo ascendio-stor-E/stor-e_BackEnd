@@ -81,7 +81,7 @@ class ChatGPTServiceTest {
                         "image",
                         StoryBookStatus.COMPLETE));
 
-        StoryStartResponseDto storyStartResponseDto = chatGPTService.startStoryBook();
+        StoryStartResponseDto storyStartResponseDto = chatGPTService.startStoryBook("Ayse");
 
 
         StoryStartResponseDto expected = new StoryStartResponseDto(

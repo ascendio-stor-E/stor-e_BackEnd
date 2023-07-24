@@ -76,12 +76,13 @@ public class ChatGPTService {
         this.randomPrompt = randomPrompt;
     }
 
-    public StoryStartResponseDto startStoryBook() {
+    public StoryStartResponseDto startStoryBook(String characterName) {
         long requestTime = System.currentTimeMillis();
+        String initial = initialPrompt.formatted(characterName);
 
         ChatGPTResponse response = sendChatGPTRequest(
                 List.of(
-                        new ChatGPTMessage("user", initialPrompt)
+                        new ChatGPTMessage("user", initial)
                 )
         );
 
@@ -90,7 +91,7 @@ public class ChatGPTService {
         StoryBook storyBook = storyBookService.createStoryBook();
 
         ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), content, "assistant", System.currentTimeMillis(), storyBook);
-        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), initialPrompt, "user", requestTime, storyBook);
+        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), initial, "user", requestTime, storyBook);
         storyHistoryRepository.saveStory(chatGPTRequestHistory);
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
 

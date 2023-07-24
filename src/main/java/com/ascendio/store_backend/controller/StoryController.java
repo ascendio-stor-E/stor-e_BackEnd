@@ -25,8 +25,8 @@ public class StoryController {
     }
 
     @PostMapping()
-    public ResponseEntity<StoryStartResponseDto> createInitialStory() {
-        return ResponseEntity.ok(chatGPTService.startStoryBook());
+    public ResponseEntity<StoryStartResponseDto> createInitialStory(@RequestParam String characterName) {
+        return ResponseEntity.ok(chatGPTService.startStoryBook(characterName));
     }
 
     @PostMapping("/continueStory")
