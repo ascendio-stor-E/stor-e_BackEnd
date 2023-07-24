@@ -30,11 +30,4 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Azure Deploy
-        uses: azure/spring-apps-deploy@v1
-        with:
-          azure-subscription: b077c6a2-b215-4296-989c-23d1ef8b7ab7
-          action: Deploy
-          service-name: stor-e-backend
-          app-name: stor-e
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/**/*.jar
+        run: mvn azure-spring-apps:deploy
