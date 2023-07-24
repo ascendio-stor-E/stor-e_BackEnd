@@ -1,0 +1,40 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches: [ 'github-actions' ]
+
+env:
+  MAVEN_OPTS: "--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          cache: 'maven'
+
+      - name: Build and Package
+        run: mvn clean package
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Azure Deploy
+        uses: azure/spring-apps-deploy@v1
+        with:
+          azure-subscription: b077c6a2-b215-4296-989c-23d1ef8b7ab7
+          action: Deploy
+          service-name: stor-e-backend
+          app-name: stor-e
+          use-staging-deployment: false
+          package: ${{ github.workspace }}/**/*.jar
