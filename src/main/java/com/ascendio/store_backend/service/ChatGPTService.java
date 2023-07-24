@@ -87,14 +87,16 @@ public class ChatGPTService {
 
         String content = response.choices().get(0).message().content();
 
-        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), content, "assistant", System.currentTimeMillis());
-        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), initialPrompt, "user", requestTime);
+        StoryBook storyBook = storyBookService.createStoryBook();
+
+        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), content, "assistant", System.currentTimeMillis(), storyBook);
+        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), initialPrompt, "user", requestTime, storyBook);
         storyHistoryRepository.saveStory(chatGPTRequestHistory);
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
 
         List<String> options = getOptions(content.split("\n"));
 
-        StoryBook storyBook = storyBookService.createStoryBook();
+
 
         return new StoryStartResponseDto(options, response.id(), storyBook.getId());
     }
@@ -111,13 +113,17 @@ public class ChatGPTService {
             prompt = "I chose Option " + optionChoice;
         }
 
+        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId,
+                Set.of(StoryBookStatus.DRAFT));
+
         ChatGPTHistory continueStory = new ChatGPTHistory(
                 UUID.randomUUID(),
                 conversationId,
                 prompt,
                 "user",
-                System.currentTimeMillis());
+                System.currentTimeMillis(),storyBook);
         previousMessages.add(continueStory);
+
 
         ChatGPTResponse response = sendChatGPTRequest(
                 previousMessages
@@ -130,7 +136,7 @@ public class ChatGPTService {
 
         String content = response.choices().get(0).message().content();
 
-        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), conversationId, content, "assistant", System.currentTimeMillis());
+        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), conversationId, content, "assistant", System.currentTimeMillis(),storyBook);
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
         storyHistoryRepository.saveStory(continueStory);
 
@@ -145,8 +151,6 @@ public class ChatGPTService {
 
         List<String> options = getOptions(lines);
 
-        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId,
-                Set.of(StoryBookStatus.DRAFT));
 
         Story savedStory = storyService.saveStory(storyText, pageNumber, null, storyBook);
 
@@ -180,6 +184,9 @@ public class ChatGPTService {
 
         long requestTime = System.currentTimeMillis();
 
+        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId,
+                Set.of(StoryBookStatus.DRAFT));
+
         ChatGPTResponse response = sendChatGPTRequest(
                 List.of(
                         new ChatGPTMessage("user", prompt)
@@ -188,13 +195,10 @@ public class ChatGPTService {
 
         String content = response.choices().get(0).message().content();
 
-        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), content, "assistant", System.currentTimeMillis());
-        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), prompt, "user", requestTime);
+        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), content, "assistant", System.currentTimeMillis(), storyBook);
+        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), prompt, "user", requestTime, storyBook);
         storyHistoryRepository.saveStory(chatGPTRequestHistory);
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
-
-        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId,
-                Set.of(StoryBookStatus.DRAFT));
 
         List<StoryContinueResponseDto> stories = Arrays
                 .stream(content.split("\n\n"))

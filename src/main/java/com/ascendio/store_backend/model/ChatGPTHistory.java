@@ -25,13 +25,18 @@ public class ChatGPTHistory {
     @Column(name = "created_at", nullable = false)
     Long createdAt;
 
+    @ManyToOne
+    @JoinColumn(name = "story_book_id")
+    private StoryBook storyBook;
 
-    public ChatGPTHistory(UUID id, String conversationId, String content, String role, Long createdAt) {
+
+    public ChatGPTHistory(UUID id, String conversationId, String content, String role, Long createdAt, StoryBook storyBook) {
         this.id = id;
         this.conversationId = conversationId;
         this.content = content;
         this.role = role;
         this.createdAt = createdAt;
+        this.storyBook = storyBook;
     }
 
     public ChatGPTHistory() {
@@ -76,6 +81,14 @@ public class ChatGPTHistory {
 
     public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public StoryBook getStoryBook() {
+        return storyBook;
+    }
+
+    public void setStoryBook(StoryBook storyBook) {
+        this.storyBook = storyBook;
     }
 
     @Override

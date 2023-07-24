@@ -39,6 +39,9 @@ public class StoryBook {
     @OneToMany(mappedBy = "storyBook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Story> stories = new ArrayList<>();
 
+    @OneToMany(mappedBy = "storyBook", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatGPTHistory> oldConversation = new ArrayList<>();
+
     public StoryBook() {
     }
 
