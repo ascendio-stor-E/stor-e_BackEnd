@@ -99,13 +99,16 @@ class ChatGPTServiceTest {
 
         UUID uuid =  UUID.randomUUID();
         UUID uuid2 =  UUID.randomUUID();
+        StoryBook storyBook = new StoryBook();
+        Story story = new Story("The Curious Case of Sammy the Squirrel",1,null,storyBook);
+        story.setId(uuid2);
         ArrayList<ChatGPTHistory> previousMessage = new ArrayList<>();
         previousMessage.add(new ChatGPTHistory(uuid,"testConversationId1234",
                 "The Curious Case of Sammy the Squirrel",
-                "user",0L));
+                "user",0L,storyBook));
         previousMessage.add(new ChatGPTHistory(uuid,"testConversationId1234",
                 "The Curious Case of Sammy the Squirrel",
-                "user",0L));
+                "user",0L,storyBook));
         when(storyHistoryRepository.findPreviousMessages(
                 "testConversationId1234")).thenReturn(previousMessage);
 
@@ -124,9 +127,6 @@ class ChatGPTServiceTest {
         when(dalleImageGeneratorService.generateImage("The Curious Case of Sammy the Squirrel"))
                 .thenReturn("ImageUrl");
 
-        StoryBook storyBook = new StoryBook();
-        Story story = new Story("The Curious Case of Sammy the Squirrel",1,null,storyBook);
-        story.setId(uuid2);
         when(storyBookService.getStoryBookById(uuid, Set.of(StoryBookStatus.DRAFT))).thenReturn(storyBook);
         when(imageBlobService.addToBlobStorage("ImageUrl",uuid,1)).thenReturn("ImageName");
         when(storyService.saveStory("The Curious Case of Sammy the Squirrel",
