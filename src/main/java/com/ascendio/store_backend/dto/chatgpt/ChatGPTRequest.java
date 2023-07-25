@@ -1,7 +1,6 @@
-package com.ascendio.store_backend.dto;
+package com.ascendio.store_backend.dto.chatgpt;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 

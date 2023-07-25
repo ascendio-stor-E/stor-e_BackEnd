@@ -18,7 +18,7 @@ public class ManualCorsFilter extends OncePerRequestFilter {
 
 
         httpServletResponse.addHeader("Access-Control-Allow-Origin","*");
-        httpServletResponse.addHeader("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS");
+        httpServletResponse.addHeader("Access-Control-Allow-Methods","GET, POST, PUT, PATCH, DELETE, OPTIONS");
         httpServletResponse.addHeader("Access-Control-Allow-Credentials","true");
         httpServletResponse.setHeader("Access-Control-Max-Age", "3600");
         httpServletResponse.setHeader("Access-Control-Allow-Headers", "authorization, content-type, xsrf-token, location");

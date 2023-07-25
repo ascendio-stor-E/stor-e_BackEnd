@@ -1,8 +1,13 @@
 package com.ascendio.store_backend.service;
 
-import com.ascendio.store_backend.dto.*;
+import com.ascendio.store_backend.dto.chatgpt.ChatGPTMessage;
+import com.ascendio.store_backend.dto.chatgpt.ChatGPTRequest;
+import com.ascendio.store_backend.dto.chatgpt.ChatGPTResponse;
+import com.ascendio.store_backend.dto.store.*;
 import com.ascendio.store_backend.model.ChatGPTHistory;
+import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.model.StoryBook;
+import com.ascendio.store_backend.model.StoryBookStatus;
 import com.ascendio.store_backend.repository.StoryHistoryRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -11,9 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ChatGPTService {
@@ -66,31 +71,34 @@ public class ChatGPTService {
         this.randomPrompt = randomPrompt;
     }
 
-    public StoryStartResponseDto startStoryBook() {
+    public StoryStartResponseDto startStoryBook(String characterName) {
         long requestTime = System.currentTimeMillis();
+        String initial = initialPrompt.formatted(characterName);
 
         ChatGPTResponse response = sendChatGPTRequest(
                 List.of(
-                        new ChatGPTMessage("user", initialPrompt)
+                        new ChatGPTMessage("user", initial)
                 )
         );
 
         String content = response.choices().get(0).message().content();
 
-        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), content, "assistant", System.currentTimeMillis());
-        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), initialPrompt, "user", requestTime);
+        StoryBook storyBook = storyBookService.createStoryBook();
+
+        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), content, "assistant", System.currentTimeMillis(), storyBook);
+        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), initial, "user", requestTime, storyBook);
         storyHistoryRepository.saveStory(chatGPTRequestHistory);
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
 
         List<String> options = getOptions(content.split("\n"));
 
-//        Create story book here
-        StoryBook storyBook = storyBookService.saveStoryBook();
+
 
         return new StoryStartResponseDto(options, response.id(), storyBook.getId());
     }
 
     public StoryContinueResponseDto continueStoryBook(int optionChoice, String conversationId, UUID storyBookId, int pageNumber) {
+        System.out.println("optionChoice:" + optionChoice + " pageNumber: " + pageNumber + " conversationId" + conversationId + " storyBookId" + storyBookId);
         List<ChatGPTHistory> previousMessages = storyHistoryRepository.findPreviousMessages(conversationId);
 
         String prompt;
@@ -102,13 +110,17 @@ public class ChatGPTService {
             prompt = "I chose Option " + optionChoice;
         }
 
+        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId,
+                Set.of(StoryBookStatus.DRAFT));
+
         ChatGPTHistory continueStory = new ChatGPTHistory(
                 UUID.randomUUID(),
                 conversationId,
                 prompt,
                 "user",
-                System.currentTimeMillis());
+                System.currentTimeMillis(),storyBook);
         previousMessages.add(continueStory);
+
 
         ChatGPTResponse response = sendChatGPTRequest(
                 previousMessages
@@ -121,7 +133,7 @@ public class ChatGPTService {
 
         String content = response.choices().get(0).message().content();
 
-        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), conversationId, content, "assistant", System.currentTimeMillis());
+        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), conversationId, content, "assistant", System.currentTimeMillis(),storyBook);
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
         storyHistoryRepository.saveStory(continueStory);
 
@@ -137,24 +149,30 @@ public class ChatGPTService {
         List<String> options = getOptions(lines);
 
 
-        String imageUrl = dalleImageGeneratorService.generateImage(storyText);
+        Story savedStory = storyService.saveStory(storyText, pageNumber, null, storyBook);
 
-        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId);
-
-        //add image to blob storage
-        String imageName = imageBlobService.addToBlobStorage(imageUrl, storyBookId, pageNumber);
-
-        // save story here
-        storyService.saveStory(storyText, pageNumber, imageName, storyBook);
-
-        //set first photo as cover image, and set the firstly selected option as title of storyBook
         if (pageNumber == 1) {
-            storyBook.setCoverImage(imageName);
             storyBook.setTitle(generateStoryTitle(previousMessages, optionChoice));
-            storyBookService.updateStoryBook(storyBook);
         }
+        storyBook.setLastModifiedDate(LocalDateTime.now());
+        storyBookService.updateStoryBook(storyBook);
 
-        return new StoryContinueResponseDto(part, storyText, options, imageName);
+        CompletableFuture.runAsync(() -> createStoryImage(savedStory));
+
+        return new StoryContinueResponseDto(part, storyText, options, null, savedStory.getId());
+    }
+
+    public void createStoryImage(Story story){
+        String imageUrl = dalleImageGeneratorService.generateImage(story.getTextContent());
+
+        String imageName = imageBlobService.addToBlobStorage(imageUrl, story.getStoryBook().getId(), story.getPageNumber());
+
+        storyService.updateStoryImage(story, imageName);
+        System.out.println("@@@> imageName > " + imageName);
+        if (story.getPageNumber() == 1) {
+            story.getStoryBook().setCoverImage(imageName);
+            storyBookService.updateStoryBook(story.getStoryBook());
+        }
     }
 
     public RandomStoryResponseDto createRandomStory(String option, UUID storyBookId) {
@@ -162,6 +180,9 @@ public class ChatGPTService {
         String prompt = randomPrompt.formatted(option);
 
         long requestTime = System.currentTimeMillis();
+
+        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId,
+                Set.of(StoryBookStatus.DRAFT));
 
         ChatGPTResponse response = sendChatGPTRequest(
                 List.of(
@@ -171,12 +192,10 @@ public class ChatGPTService {
 
         String content = response.choices().get(0).message().content();
 
-        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), content, "assistant", System.currentTimeMillis());
-        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), prompt, "user", requestTime);
+        ChatGPTHistory chatGPTResponseHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), content, "assistant", System.currentTimeMillis(), storyBook);
+        ChatGPTHistory chatGPTRequestHistory = new ChatGPTHistory(UUID.randomUUID(), response.id(), prompt, "user", requestTime, storyBook);
         storyHistoryRepository.saveStory(chatGPTRequestHistory);
         storyHistoryRepository.saveStory(chatGPTResponseHistory);
-
-        StoryBook storyBook = storyBookService.getStoryBookById(storyBookId);
 
         List<StoryContinueResponseDto> stories = Arrays
                 .stream(content.split("\n\n"))
@@ -192,16 +211,19 @@ public class ChatGPTService {
 
                     String imageName = imageBlobService.addToBlobStorage(imageUrl, storyBook.getId(), pageNumber);
 
-                    storyService.saveStory(story, pageNumber, imageName, storyBook);
+                    Story savedStory = storyService.saveStory(story, pageNumber, imageName, storyBook);
 
                     if (pageNumber == 1) {
                         storyBook.setCoverImage(imageName);
-                        storyBookService.updateStoryBook(storyBook);
                     }
 
-                    return new StoryContinueResponseDto(part, story, List.of(), imageName);
+                    return new StoryContinueResponseDto(part, story, List.of(), imageName, savedStory.getId());
                 })
                 .toList();
+
+        storyBook.setTitle(option);
+        storyBook.setLastModifiedDate(LocalDateTime.now());
+        storyBookService.updateStoryBook(storyBook);
 
         return new RandomStoryResponseDto(storyBook.getId(), stories);
     }
@@ -239,6 +261,35 @@ public class ChatGPTService {
                     return s;
                 })
                 .toList();
+    }
+
+    public ContinueDraftStoryBookDto continueDraftStoryBook(UUID storyBookId) {
+        List<ChatGPTHistory> history = storyHistoryRepository.findAllByStoryBookId(storyBookId);
+        if (history.isEmpty()) {
+            throw new RuntimeException("Draft does not exist for : " + storyBookId);
+        }
+        List<ContinueDraftStoryBookPageDto> pages = history.stream()
+                .filter(record -> record.getRole().equals("assistant") && record.getContent().startsWith("Part"))
+                .sorted(Comparator.comparingLong(ChatGPTHistory::getCreatedAt))
+                .map(record -> {
+                    String[] lines = record.getContent().split("\n");
+                    String part = lines[0];
+
+                    String storyText = Arrays.stream(lines)
+                            .filter(line -> !line.startsWith("Part ") && !line.isEmpty())
+                            .findFirst()
+                            .orElseThrow();
+
+                    List<String> options = getOptions(lines);
+
+                    Story story = storyService.getStoryByBookIdAndPageNumber(storyBookId, Integer.parseInt(part.charAt(5) + "")).get();
+
+                    return new ContinueDraftStoryBookPageDto(part, storyText, options, story.getImage(), story.getId(), record.getConversationId());
+                })
+                .toList();
+
+
+        return new ContinueDraftStoryBookDto(storyBookId, pages.get(0).conversationId(), pages, pages.get(pages.size() - 1).options());
     }
 
     private String generateStoryTitle(List<ChatGPTHistory> previousMessage, int optionChoice) {

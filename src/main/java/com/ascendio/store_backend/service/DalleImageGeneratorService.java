@@ -1,7 +1,7 @@
 package com.ascendio.store_backend.service;
 
-import com.ascendio.store_backend.dto.DalleImageGenerationRequest;
-import com.ascendio.store_backend.dto.DalleImageGenerationResponse;
+import com.ascendio.store_backend.dto.dalle.DalleImageGenerationRequest;
+import com.ascendio.store_backend.dto.dalle.DalleImageGenerationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

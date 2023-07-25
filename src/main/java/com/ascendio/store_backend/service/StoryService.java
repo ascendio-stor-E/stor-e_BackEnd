@@ -2,6 +2,7 @@ package com.ascendio.store_backend.service;
 
 import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.model.StoryBook;
+import com.ascendio.store_backend.model.StoryBookStatus;
 import com.ascendio.store_backend.repository.StoryBookRepository;
 import com.ascendio.store_backend.repository.StoryRepository;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,14 @@ public class StoryService {
 
     public Story saveStory(String storyContent, int pageNumber, String imageName, StoryBook storyBook) {
         if (pageNumber == MAX_NUMBER_OF_STORIES) {
-            storyBook.setStatus(true);
+            storyBook.setStatus(StoryBookStatus.COMPLETE);
         }
         Story story = new Story(storyContent, pageNumber, imageName, storyBook);
+        return storyRepository.save(story);
+    }
+
+    public Story updateStoryImage(Story story, String imageName){
+        story.setImage(imageName);
         return storyRepository.save(story);
     }
 
@@ -38,5 +44,9 @@ public class StoryService {
 
     public Optional<Story> getStoryById(UUID storyId) {
         return storyRepository.findById(storyId);
+    }
+
+    public Optional<Story> getStoryByBookIdAndPageNumber(UUID storyBookId, int pageNumber) {
+        return storyRepository.findFirstByStoryBookIdAndPageNumber(storyBookId, pageNumber);
     }
 }
