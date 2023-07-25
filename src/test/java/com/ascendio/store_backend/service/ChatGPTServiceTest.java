@@ -124,8 +124,8 @@ class ChatGPTServiceTest {
                                         "Option 3:The Brave Teddy Bear's Treasure Hunt"))
                 )));
 
-        when(dalleImageGeneratorService.generateImage("The Curious Case of Sammy the Squirrel"))
-                .thenReturn("ImageUrl");
+//        when(dalleImageGeneratorService.generateImage("The Curious Case of Sammy the Squirrel"))
+//                .thenReturn("ImageUrl");
 
         when(storyBookService.getStoryBookById(uuid, Set.of(StoryBookStatus.DRAFT))).thenReturn(storyBook);
         when(imageBlobService.addToBlobStorage("ImageUrl",uuid,1)).thenReturn("ImageName");
