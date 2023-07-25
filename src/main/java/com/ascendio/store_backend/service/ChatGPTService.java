@@ -3,9 +3,7 @@ package com.ascendio.store_backend.service;
 import com.ascendio.store_backend.dto.chatgpt.ChatGPTMessage;
 import com.ascendio.store_backend.dto.chatgpt.ChatGPTRequest;
 import com.ascendio.store_backend.dto.chatgpt.ChatGPTResponse;
-import com.ascendio.store_backend.dto.store.RandomStoryResponseDto;
-import com.ascendio.store_backend.dto.store.StoryContinueResponseDto;
-import com.ascendio.store_backend.dto.store.StoryStartResponseDto;
+import com.ascendio.store_backend.dto.store.*;
 import com.ascendio.store_backend.model.ChatGPTHistory;
 import com.ascendio.store_backend.model.Story;
 import com.ascendio.store_backend.model.StoryBook;
@@ -19,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -103,6 +98,7 @@ public class ChatGPTService {
     }
 
     public StoryContinueResponseDto continueStoryBook(int optionChoice, String conversationId, UUID storyBookId, int pageNumber) {
+        System.out.println("optionChoice:" + optionChoice + " pageNumber: " + pageNumber + " conversationId" + conversationId + " storyBookId" + storyBookId);
         List<ChatGPTHistory> previousMessages = storyHistoryRepository.findPreviousMessages(conversationId);
 
         String prompt;
@@ -172,7 +168,7 @@ public class ChatGPTService {
         String imageName = imageBlobService.addToBlobStorage(imageUrl, story.getStoryBook().getId(), story.getPageNumber());
 
         storyService.updateStoryImage(story, imageName);
-
+        System.out.println("@@@> imageName > " + imageName);
         if (story.getPageNumber() == 1) {
             story.getStoryBook().setCoverImage(imageName);
             storyBookService.updateStoryBook(story.getStoryBook());
@@ -265,6 +261,35 @@ public class ChatGPTService {
                     return s;
                 })
                 .toList();
+    }
+
+    public ContinueDraftStoryBookDto continueDraftStoryBook(UUID storyBookId) {
+        List<ChatGPTHistory> history = storyHistoryRepository.findAllByStoryBookId(storyBookId);
+        if (history.isEmpty()) {
+            throw new RuntimeException("Draft does not exist for : " + storyBookId);
+        }
+        List<ContinueDraftStoryBookPageDto> pages = history.stream()
+                .filter(record -> record.getRole().equals("assistant") && record.getContent().startsWith("Part"))
+                .sorted(Comparator.comparingLong(ChatGPTHistory::getCreatedAt))
+                .map(record -> {
+                    String[] lines = record.getContent().split("\n");
+                    String part = lines[0];
+
+                    String storyText = Arrays.stream(lines)
+                            .filter(line -> !line.startsWith("Part ") && !line.isEmpty())
+                            .findFirst()
+                            .orElseThrow();
+
+                    List<String> options = getOptions(lines);
+
+                    Story story = storyService.getStoryByBookIdAndPageNumber(storyBookId, Integer.parseInt(part.charAt(5) + "")).get();
+
+                    return new ContinueDraftStoryBookPageDto(part, storyText, options, story.getImage(), story.getId(), record.getConversationId());
+                })
+                .toList();
+
+
+        return new ContinueDraftStoryBookDto(storyBookId, pages.get(0).conversationId(), pages, pages.get(pages.size() - 1).options());
     }
 
     private String generateStoryTitle(List<ChatGPTHistory> previousMessage, int optionChoice) {

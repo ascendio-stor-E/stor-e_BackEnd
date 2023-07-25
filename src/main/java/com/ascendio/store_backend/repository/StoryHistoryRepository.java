@@ -22,4 +22,6 @@ public interface StoryHistoryRepository extends JpaRepository<ChatGPTHistory, UU
 
     }
 
+    List<ChatGPTHistory> findAllByStoryBookId(UUID storyBookId);
+
 }

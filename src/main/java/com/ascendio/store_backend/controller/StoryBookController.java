@@ -1,8 +1,10 @@
 package com.ascendio.store_backend.controller;
 
+import com.ascendio.store_backend.dto.store.ContinueDraftStoryBookDto;
 import com.ascendio.store_backend.dto.store.StoryBookResponseDto;
 import com.ascendio.store_backend.dto.store.StoryDTO;
 import com.ascendio.store_backend.model.StoryBookStatus;
+import com.ascendio.store_backend.service.ChatGPTService;
 import com.ascendio.store_backend.service.DownloadPdfService;
 import com.ascendio.store_backend.service.StoryBookService;
 import com.ascendio.store_backend.service.StoryService;
@@ -22,11 +24,14 @@ public class StoryBookController {
     private StoryBookService storyBookService;
     private StoryService storyService;
     private DownloadPdfService downloadPdfService;
+    private ChatGPTService chatGPTService;
 
-    public StoryBookController(StoryBookService storyBookService, StoryService storyService, DownloadPdfService downloadPdfService) {
+    public StoryBookController(StoryBookService storyBookService, StoryService storyService,
+                               DownloadPdfService downloadPdfService, ChatGPTService chatGPTService) {
         this.storyBookService = storyBookService;
         this.storyService = storyService;
         this.downloadPdfService = downloadPdfService;
+        this.chatGPTService = chatGPTService;
     }
 
     @GetMapping
@@ -63,4 +68,8 @@ public class StoryBookController {
         return ResponseEntity.ok(downloadPdfService.generateStoryBookPdf(storyBookId));
     }
 
+    @GetMapping("/{storyBookId}/continueDraft")
+    public ResponseEntity<ContinueDraftStoryBookDto> continueDraftStoryBook(@PathVariable UUID storyBookId) {
+        return ResponseEntity.ok(chatGPTService.continueDraftStoryBook(storyBookId));
+    }
 }

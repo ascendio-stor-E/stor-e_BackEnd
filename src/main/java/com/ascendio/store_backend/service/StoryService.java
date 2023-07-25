@@ -45,4 +45,8 @@ public class StoryService {
     public Optional<Story> getStoryById(UUID storyId) {
         return storyRepository.findById(storyId);
     }
+
+    public Optional<Story> getStoryByBookIdAndPageNumber(UUID storyBookId, int pageNumber) {
+        return storyRepository.findFirstByStoryBookIdAndPageNumber(storyBookId, pageNumber);
+    }
 }
