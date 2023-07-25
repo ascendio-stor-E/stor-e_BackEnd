@@ -293,7 +293,7 @@ public class ChatGPTService {
     }
 
     private String generateStoryTitle(List<ChatGPTHistory> previousMessage, int optionChoice) {
-        String selectedOption = previousMessage.get(1).getContent().split("\n")[optionChoice - 1];
-        return selectedOption.substring(11, selectedOption.length() - 1);
+        String selectedOption = previousMessage.get(1).getContent().split("\n")[optionChoice - 1].replace("\"", "");
+        return selectedOption.substring(10, selectedOption.length());
     }
 }
