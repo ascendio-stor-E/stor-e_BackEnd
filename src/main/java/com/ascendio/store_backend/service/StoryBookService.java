@@ -43,7 +43,7 @@ public class StoryBookService {
 
     // get all storybooks (DRAFT, COMPLETE, FAVOURITES) at one backend call from frontend)
     public List<StoryBook> getStoryBooks(UUID userId) {
-       return storyBookRepository.findAllByStoryUserIdAndStatusIsNotOrderByStatusDescLastModifiedDateDesc(userId, StoryBookStatus.DELETED);
+       return storyBookRepository.findAllByStoryUserIdAndStatusIsNotOrderByLastModifiedDateDesc(userId, StoryBookStatus.DELETED);
     }
 
     public StoryBook updateStoryBook(StoryBook storyBook) {
