@@ -11,8 +11,10 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.stereotype.Service;
-
+import org.springframework.util.ResourceUtils;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -70,7 +72,12 @@ public class DownloadPdfService {
         storyBookPdf.addPage(coverPage);
 
         try (PDPageContentStream pdPageContentStream = new PDPageContentStream(storyBookPdf, coverPage)) {
+            //Draw cover template
+            byte[] coverImageBytes = getTemplate("pdf_cover1.png");
+            PDImageXObject coverImage = PDImageXObject.createFromByteArray(storyBookPdf, coverImageBytes, "");
+            pdPageContentStream.drawImage(coverImage, 0, 0, PAGE_SIZE.getWidth(), PAGE_SIZE.getHeight());
 
+            //Draw title
             pdPageContentStream.beginText();
 
             pdPageContentStream.setFont(PDType1Font.TIMES_ROMAN, TITLE_FONT_SIZE);
@@ -123,5 +130,15 @@ public class DownloadPdfService {
             pdPageContentStream.showText(DownloadPdfStringUtil.centerString("(" + pageNumber + ")", PG_NUMBER_LINE_LENGTH));
             pdPageContentStream.endText();
         }
+    }
+
+    private byte[] getTemplate(String templateName) throws Exception{
+        File template = ResourceUtils.getFile("classpath:images/" + templateName);
+        byte[] bytes = new byte[(int) template.length()];
+
+        try(FileInputStream in = new FileInputStream(template)){
+            in.read(bytes);
+        }
+        return  bytes;
     }
 }
