@@ -105,7 +105,7 @@ public class ChatGPTService {
         if (previousMessages.size() == 2) {
             prompt = "I chose Option " + optionChoice + ". " + secondPrompt;
         } else if (previousMessages.size() == 10) {
-            prompt = "I chose Option " + optionChoice + ". This the last part the story should end with maximum 100 word.";
+            prompt = "I chose Option " + optionChoice + ". This the last part the story should end with maximum 50 word.";
         } else {
             prompt = "I chose Option " + optionChoice;
         }
@@ -293,7 +293,7 @@ public class ChatGPTService {
     }
 
     private String generateStoryTitle(List<ChatGPTHistory> previousMessage, int optionChoice) {
-        String selectedOption = previousMessage.get(1).getContent().split("\n")[optionChoice - 1];
-        return selectedOption.substring(11, selectedOption.length() - 1);
+        String selectedOption = previousMessage.get(1).getContent().split("\n")[optionChoice - 1].replace("\"", "");
+        return selectedOption.substring(10, selectedOption.length());
     }
 }
