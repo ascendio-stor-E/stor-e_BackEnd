@@ -105,7 +105,7 @@ public class ChatGPTService {
         if (previousMessages.size() == 2) {
             prompt = "I chose Option " + optionChoice + ". " + secondPrompt;
         } else if (previousMessages.size() == 10) {
-            prompt = "I chose Option " + optionChoice + ". This the last part the story should end with maximum 100 word.";
+            prompt = "I chose Option " + optionChoice + ". This the last part the story should end with maximum 50 word.";
         } else {
             prompt = "I chose Option " + optionChoice;
         }
