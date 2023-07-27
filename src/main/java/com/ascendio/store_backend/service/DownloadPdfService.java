@@ -10,7 +10,9 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -132,13 +134,10 @@ public class DownloadPdfService {
         }
     }
 
-    private byte[] getTemplate(String templateName) throws Exception{
-        File template = ResourceUtils.getFile("classpath:images/" + templateName);
-        byte[] bytes = new byte[(int) template.length()];
+    private byte[] getTemplate(String templateName) throws Exception {
+        ClassPathResource classPathResource = new ClassPathResource("images/" + templateName);
+        byte[] binaryData = FileCopyUtils.copyToByteArray(classPathResource.getInputStream());
+        return binaryData;
 
-        try(FileInputStream in = new FileInputStream(template)){
-            in.read(bytes);
-        }
-        return  bytes;
     }
 }
