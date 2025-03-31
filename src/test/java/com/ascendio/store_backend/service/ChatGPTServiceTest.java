@@ -1,15 +1,16 @@
 package com.ascendio.store_backend.service;
 
-import com.ascendio.store_backend.dto.chatgpt.ChatGPTMessage;
-import com.ascendio.store_backend.dto.chatgpt.ChatGPTResponse;
-import com.ascendio.store_backend.dto.chatgpt.Choice;
-import com.ascendio.store_backend.dto.store.StoryContinueResponseDto;
-import com.ascendio.store_backend.dto.store.StoryStartResponseDto;
-import com.ascendio.store_backend.model.ChatGPTHistory;
-import com.ascendio.store_backend.model.Story;
-import com.ascendio.store_backend.model.StoryBook;
-import com.ascendio.store_backend.model.StoryBookStatus;
-import com.ascendio.store_backend.repository.StoryHistoryRepository;
+import com.ascendio.store_backend.chatgpt.*;
+import com.ascendio.store_backend.dalle.DalleImageGeneratorService;
+import com.ascendio.store_backend.shared.databases.azureImages.ImageBlobService;
+import com.ascendio.store_backend.stories.StoryContinueResponseDto;
+import com.ascendio.store_backend.stories.StoryStartResponseDto;
+import com.ascendio.store_backend.stories.Story;
+import com.ascendio.store_backend.storybooks.StoryBook;
+import com.ascendio.store_backend.storybooks.StoryBookStatus;
+import com.ascendio.store_backend.stories.StoryHistoryRepository;
+import com.ascendio.store_backend.stories.StoryService;
+import com.ascendio.store_backend.storybooks.StoryBookService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
