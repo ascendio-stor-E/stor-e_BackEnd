@@ -6,6 +6,7 @@ import com.ascendio.store_backend.storybooks.StoryBook;
 import com.ascendio.store_backend.storybooks.StoryBookStatus;
 import com.ascendio.store_backend.storybooks.StoryBookService;
 import com.ascendio.store_backend.shared.utils.DownloadPdfStringUtil;
+import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -23,7 +24,10 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class DownloadPdfService {
+    private final StoryBookService storyBookService;
+    private final AzureBlobService azureBlobService;
 
     private static final PDRectangle PAGE_SIZE = PDRectangle.A5;
     private static final int TITLE_FONT_SIZE = 16;
@@ -32,13 +36,6 @@ public class DownloadPdfService {
     private static final PDType1Font TEXT_FONT = PDType1Font.COURIER;
     private final float VERTICAL_SPACE_BETWEEN_LINES = 14.5f;
 
-    private StoryBookService storyBookService;
-    private AzureBlobService azureBlobService;
-
-    public DownloadPdfService(StoryBookService storyBookService, AzureBlobService azureBlobService) {
-        this.storyBookService = storyBookService;
-        this.azureBlobService = azureBlobService;
-    }
 
     public byte[] generateStoryBookPdf(UUID storyBookId) {
 
@@ -67,7 +64,7 @@ public class DownloadPdfService {
     private void createCoverPage(PDDocument storyBookPdf, String coverText) throws Exception {
 
         final int PAGE_WIDTH = 400;
-        final int CONVERTION_UNIT = 100;
+        final int CONVERSION_UNIT = 100;
         final int LINE_START_VERTICAL = 350;
 
         PDPage coverPage = new PDPage(PAGE_SIZE);
@@ -85,7 +82,7 @@ public class DownloadPdfService {
             pdPageContentStream.setFont(PDType1Font.TIMES_ROMAN, TITLE_FONT_SIZE);
             pdPageContentStream.setLeading(VERTICAL_SPACE_BETWEEN_LINES);
 
-            int lineStartHorizontal = (int) (PAGE_WIDTH / 2 - TEXT_FONT.getStringWidth(coverText) / (CONVERTION_UNIT * 2));
+            int lineStartHorizontal = (int) (PAGE_WIDTH / 2 - TEXT_FONT.getStringWidth(coverText) / (CONVERSION_UNIT * 2));
             pdPageContentStream.newLineAtOffset(lineStartHorizontal, LINE_START_VERTICAL);
 
             pdPageContentStream.showText(coverText);
@@ -136,8 +133,7 @@ public class DownloadPdfService {
 
     private byte[] getTemplate(String templateName) throws Exception {
         ClassPathResource classPathResource = new ClassPathResource("images/" + templateName);
-        byte[] binaryData = FileCopyUtils.copyToByteArray(classPathResource.getInputStream());
-        return binaryData;
+        return FileCopyUtils.copyToByteArray(classPathResource.getInputStream());
 
     }
 }

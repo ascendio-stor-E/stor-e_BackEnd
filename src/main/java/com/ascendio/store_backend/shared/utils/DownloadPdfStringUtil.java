@@ -6,10 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DownloadPdfStringUtil {
-
-    private DownloadPdfStringUtil() {
-    }
-
     public static List<String> breakTextToLines(String text, int lineCharLength) {
         List<String> lines = new ArrayList<>();
         if(text.length()  <= lineCharLength) {
@@ -27,7 +23,7 @@ public class DownloadPdfStringUtil {
             }
             sbLine.append(" " + part);
         }
-        if (sbLine.length() > 0) {
+        if (!sbLine.isEmpty()) {
             lines.add(sbLine.toString().trim());
         }
 

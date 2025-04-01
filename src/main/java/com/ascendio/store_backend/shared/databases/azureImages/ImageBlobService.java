@@ -2,6 +2,7 @@ package com.ascendio.store_backend.shared.databases.azureImages;
 
 import com.ascendio.store_backend.shared.databases.azure.AzureBlobService;
 import com.ascendio.store_backend.shared.exceptions.ImageSaveException;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.stereotype.Service;
 import java.net.URL;
@@ -11,14 +12,11 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ImageBlobService {
+    private final AzureBlobService azureBlobService;
 
     private static final int BYTE_BUFFER_SIZE = 4096;
-    private AzureBlobService azureBlobService;
-
-    public ImageBlobService(AzureBlobService azureBlobService) {
-        this.azureBlobService = azureBlobService;
-    }
 
     public String addToBlobStorage(String imageUrl, UUID storyBookId, int pageNumber) {
         String imageName = storyBookId.toString().concat(String.valueOf(pageNumber));

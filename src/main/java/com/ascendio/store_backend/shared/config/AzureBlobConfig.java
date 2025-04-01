@@ -7,6 +7,7 @@ import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.common.policy.RequestRetryOptions;
 import com.azure.storage.common.policy.RetryPolicyType;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,11 +20,12 @@ public class AzureBlobConfig {
     private static final int MAX_TRIES = 5;
     private static final long TRY_TIMEOUT_SECONDS = 300L;
 
-    private String clientId;
-    private String clientSecret;
-    private String tenantId;
-    private String storageEndpoint;
-    private String storageContainer;
+    private final String clientId;
+    private final String clientSecret;
+    private final String tenantId;
+    private final String storageEndpoint;
+    @Getter
+    private final String storageContainer;
 
     public AzureBlobConfig(
             @Value("${app.config.azure.client-id}") String clientId,
@@ -68,10 +70,6 @@ public class AzureBlobConfig {
                         null,
                         null,
                         null)).buildAsyncClient();
-    }
-
-    public String getStorageContainer() {
-        return storageContainer;
     }
 
     private ClientSecretCredential getAzureClientCredentials() {

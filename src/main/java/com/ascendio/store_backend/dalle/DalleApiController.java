@@ -1,5 +1,6 @@
 package com.ascendio.store_backend.dalle;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -7,17 +8,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/storE")
+@RequiredArgsConstructor
 public class DalleApiController {
 
-    private DalleImageGeneratorService service;
-
-    public DalleApiController(DalleImageGeneratorService service) {
-        this.service = service;
-    }
+    private final DalleImageGeneratorService service;
 
     @GetMapping("/image")
     public ResponseEntity<DalleImageResponse> generateImage(@RequestParam("storyText") String storyText) {
         return ResponseEntity.ok(new DalleImageResponse(storyText, service.generateImage(storyText)));
     }
-
 }

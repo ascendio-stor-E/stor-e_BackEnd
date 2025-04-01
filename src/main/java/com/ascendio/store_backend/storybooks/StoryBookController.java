@@ -5,6 +5,7 @@ import com.ascendio.store_backend.chatgpt.ChatGPTService;
 import com.ascendio.store_backend.shared.services.DownloadPdfService;
 import com.ascendio.store_backend.stories.StoryService;
 import com.ascendio.store_backend.shared.utils.Converter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,20 +16,13 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/storybook")
+@RequiredArgsConstructor
 public class StoryBookController {
 
-    private StoryBookService storyBookService;
-    private StoryService storyService;
-    private DownloadPdfService downloadPdfService;
-    private ChatGPTService chatGPTService;
-
-    public StoryBookController(StoryBookService storyBookService, StoryService storyService,
-                               DownloadPdfService downloadPdfService, ChatGPTService chatGPTService) {
-        this.storyBookService = storyBookService;
-        this.storyService = storyService;
-        this.downloadPdfService = downloadPdfService;
-        this.chatGPTService = chatGPTService;
-    }
+    private final StoryBookService storyBookService;
+    private final StoryService storyService;
+    private final DownloadPdfService downloadPdfService;
+    private final ChatGPTService chatGPTService;
 
     @GetMapping
     public ResponseEntity<List<StoryBookResponseDto>> getStoryBooks(@RequestParam UUID userId){

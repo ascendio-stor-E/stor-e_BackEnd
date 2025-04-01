@@ -3,6 +3,7 @@ package com.ascendio.store_backend.stories;
 import com.ascendio.store_backend.storybooks.StoryBook;
 import com.ascendio.store_backend.storybooks.StoryBookStatus;
 import com.ascendio.store_backend.storybooks.StoryBookService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,16 +12,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class StoryService {
-
-    private static final Integer MAX_NUMBER_OF_STORIES = 5;
     private final StoryRepository storyRepository;
     private final StoryBookService.StoryBookRepository storyBookRepository;
 
-    public StoryService(StoryRepository storyRepository, StoryBookService.StoryBookRepository storyBookRepository) {
-        this.storyRepository = storyRepository;
-        this.storyBookRepository = storyBookRepository;
-    }
+    private static final Integer MAX_NUMBER_OF_STORIES = 5;
 
     public Story saveStory(String storyContent, int pageNumber, String imageName, StoryBook storyBook) {
         if (pageNumber == MAX_NUMBER_OF_STORIES) {
@@ -30,14 +27,14 @@ public class StoryService {
         return storyRepository.save(story);
     }
 
-    public Story updateStoryImage(Story story, String imageName){
+    public void updateStoryImage(Story story, String imageName){
         story.setImage(imageName);
-        return storyRepository.save(story);
+        storyRepository.save(story);
     }
 
     public List<Story> getStories(UUID storyBookId) {
         return storyBookRepository.findById(storyBookId)
-                .map(sb -> sb.getStories()).orElseGet(() -> new ArrayList<>());
+                .map(StoryBook::getStories).orElseGet(ArrayList::new);
     }
 
     public Optional<Story> getStoryById(UUID storyId) {

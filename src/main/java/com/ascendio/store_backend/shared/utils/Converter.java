@@ -9,7 +9,6 @@ import com.ascendio.store_backend.storybooks.StoryBook;
 import java.util.List;
 
 public class Converter {
-
     public static StoryResponseDto toStoryResponseDto(Story story) {
         return new StoryResponseDto(
                 story.getId(),
@@ -36,13 +35,11 @@ public class Converter {
     }
 
     public static List<StoryResponseDto> toStoryResponseDtoList(List<Story> stories) {
-        List<StoryResponseDto> storyResponseDtoList = stories.stream().map(story -> toStoryResponseDto(story)).toList();
-        return storyResponseDtoList;
+        return stories.stream().map(Converter::toStoryResponseDto).toList();
     }
 
     public static List<StoryBookResponseDto> toStoryBookResponseDtoList(List<StoryBook> storyBooks) {
-        List<StoryBookResponseDto> storyBookResponses = storyBooks.stream().map(storyBook -> toStoryBookResponseDto(storyBook)).toList();
-        return storyBookResponses;
+        return storyBooks.stream().map(Converter::toStoryBookResponseDto).toList();
     }
 
     public static List<StoryDTO> storyListToDTO(List<Story> stories) {

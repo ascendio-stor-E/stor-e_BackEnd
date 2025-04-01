@@ -8,21 +8,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Objects;
+
 @Service
 public class DalleImageGeneratorService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DalleImageGeneratorService.class);
-    private static final String IMAGE_SIZE = "512x512";
-    private static final Integer NUMBER_OF_IMAGES = 1;
-    private static final String ILLUSTRATION_STYLE = "Seussian style cartoon: ";
     private final RestTemplate restTemplate;
-    private String openAiApiKey;
-    private String openAiApiUrl;
-    private final String apiEndpoint = "/v1/images/generations";
+    private final String openAiApiKey;
+    private final String openAiApiUrl;
 
-    public DalleImageGeneratorService(@Value("${openai.api-key}") String openAiApiKey,
-                                      @Value("${openai.api-url}") String openAiApiUrl,
-                                      RestTemplate restTemplate) {
+    public DalleImageGeneratorService(
+            @Value("${openai.api-key}") String openAiApiKey,
+            @Value("${openai.api-url}") String openAiApiUrl,
+            RestTemplate restTemplate
+    ) {
         this.restTemplate = restTemplate;
         this.openAiApiKey = openAiApiKey;
         this.openAiApiUrl = openAiApiUrl;
@@ -38,12 +36,16 @@ public class DalleImageGeneratorService {
         httpHeaders.setBearerAuth(openAiApiKey);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
+        String ILLUSTRATION_STYLE = "Seussian style cartoon: ";
         String prompt = ILLUSTRATION_STYLE + storyText;
 
+        String IMAGE_SIZE = "512x512";
+        Integer NUMBER_OF_IMAGES = 1;
         DalleImageGenerationRequest requestBody = new DalleImageGenerationRequest(prompt, IMAGE_SIZE, NUMBER_OF_IMAGES);
 
         HttpEntity<DalleImageGenerationRequest> httpEntity = new HttpEntity<>(requestBody, httpHeaders);
 
+        String apiEndpoint = "/v1/images/generations";
         ResponseEntity<DalleImageGenerationResponse> response = restTemplate.exchange(
                 openAiApiUrl + apiEndpoint,
                 HttpMethod.POST,
@@ -51,6 +53,6 @@ public class DalleImageGeneratorService {
                 DalleImageGenerationResponse.class
         );
 
-        return response.getBody().data()[0].url();
+        return Objects.requireNonNull(response.getBody()).data()[0].url();
     }
 }

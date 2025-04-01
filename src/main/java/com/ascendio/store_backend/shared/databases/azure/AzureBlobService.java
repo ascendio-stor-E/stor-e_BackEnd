@@ -4,6 +4,7 @@ import com.ascendio.store_backend.shared.config.AzureBlobConfig;
 import com.azure.core.util.Context;
 import com.azure.storage.blob.*;
 import com.azure.storage.blob.models.DownloadRetryOptions;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -14,17 +15,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
 @Service
+@RequiredArgsConstructor
 public class AzureBlobService {
+    private final BlobServiceClient blobServiceClient;
+    private final AzureBlobConfig azureBlobConfig;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AzureBlobService.class);
-
-    private BlobServiceClient blobServiceClient;
-    private AzureBlobConfig azureBlobConfig;
-
-    public AzureBlobService(BlobServiceClient blobServiceClient, AzureBlobConfig azureBlobConfig) {
-        this.blobServiceClient = blobServiceClient;
-        this.azureBlobConfig = azureBlobConfig;
-    }
 
     public void uploadToAzureBlob(String imageName, byte[] data) {
         BlobClient blobClient = getBlobClient(azureBlobConfig.getStorageContainer(), imageName);
@@ -44,8 +40,11 @@ public class AzureBlobService {
         return bout.toByteArray();
     }
 
-    private void downloadBlobFromAzure(OutputStream outputStream, String container,
-                                       String blobName) {
+    private void downloadBlobFromAzure(
+            OutputStream outputStream,
+            String container,
+            String blobName)
+    {
         BlobClient blobClient = getBlobClient(container, blobName);
         blobClient.downloadStreamWithResponse(outputStream, null,
                 new DownloadRetryOptions().setMaxRetryRequests(5),

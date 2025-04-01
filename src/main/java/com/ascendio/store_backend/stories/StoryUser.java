@@ -2,12 +2,14 @@ package com.ascendio.store_backend.stories;
 
 import com.ascendio.store_backend.storybooks.StoryBook;
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "story_user")
 public class StoryUser {
@@ -28,54 +30,4 @@ public class StoryUser {
 
     @OneToMany(mappedBy = "storyUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoryBook> storyBooks = new ArrayList<>();
-
-    public StoryUser() {
-    }
-
-    public StoryUser(UUID id, String name, String email, List<StoryBook> storyBooks) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.storyBooks = storyBooks;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public List<StoryBook> getStoryBooks() {
-        return storyBooks;
-    }
-
-    public void setStoryBooks(List<StoryBook> storyBooks) {
-        this.storyBooks = storyBooks;
-    }
 }
